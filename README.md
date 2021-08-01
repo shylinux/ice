@@ -22,6 +22,7 @@ func main() {
 # run main.go and visit http://localhost:9090/ on browser
 $ go run main.go
 ```
+visit <a href="http://localhost:9090" target="_blank">http://localhost:9090</a> on browser
 
 ## API Examples
 
@@ -42,5 +43,5 @@ func main() {
 $ go run main.go
 ```
 
-visit <http://localhost:9090/demo/tool> on browser
+visit <a href="http://localhost:9090/demo/tool" target="_blank">http://localhost:9090/demo/tool</a> on browser
 
