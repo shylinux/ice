@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	ice "github.com/shylinux/icebergs"
+	"github.com/shylinux/icebergs/base/web"
 	kit "github.com/shylinux/toolkits"
 	log "github.com/shylinux/toolkits/logs"
 )
@@ -42,13 +43,21 @@ func cmd(command *ice.Command, obj interface{}) {
 		}
 	}
 }
-func Cmd(key string, obj interface{}, show []*Show) {
+func Cmd(key string, obj interface{}, shows ...[]*Show) {
 	command := &ice.Command{Action: map[string]*ice.Action{}}
 	config := &ice.Config{Value: kit.Data()}
 	meta := kit.Value(config.Value, kit.MDB_META)
 
+	show := []*Show{}
+	for _, s := range shows {
+		show = append(show, s...)
+	}
+
 	t, v := ref(obj)
 	for i := 0; i < v.NumField(); i++ {
+		if !v.Field(i).CanInterface() {
+			continue
+		}
 		if shower, ok := v.Field(i).Interface().(Shower); ok {
 			show = shower.Show(key, show)
 			cmd(command, v.Field(i).Interface())
@@ -73,8 +82,8 @@ func Cmd(key string, obj interface{}, show []*Show) {
 			kit.Value(meta, kit.MDB_SHORT, shower.ShortDef())
 		}
 		show = shower.Show(key, show)
-		cmd(command, obj)
 	}
+	cmd(command, obj)
 
 	list := strings.Split(key, ".")
 	for _, show := range show {
@@ -114,10 +123,10 @@ func Cmd(key string, obj interface{}, show []*Show) {
 					list[len(list)-1]: command,
 				},
 			}
-			log.Debug(fmt.Sprintf("%s %s %s", last.Name, "<-", context.Name))
+			log.Debug(fmt.Sprintf("%s %s %s.%s", last.Name, "<-", context.Name))
 
 			if !has {
-				last.Register(context, nil)
+				last.Register(context, &web.Frame{})
 			} else {
 				last.Merge(context)
 			}
@@ -127,7 +136,7 @@ func Cmd(key string, obj interface{}, show []*Show) {
 		if !has {
 			context := &ice.Context{Name: list[i-1]}
 			log.Debug(last.Name, "<-", context.Name)
-			last.Register(context, nil)
+			last.Register(context, &web.Frame{})
 			last = context
 		}
 	}

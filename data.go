@@ -26,3 +26,7 @@ func (d Data) Delete(m *Message, arg ...interface{}) {
 func (d Data) Select(m *Message, arg ...interface{}) {
 	m.Cmdy(mdb.SELECT, m.PrefixKey(), "", kit.Simple(arg))
 }
+
+func (d Data) Inputs(m *Message, arg ...interface{}) {
+	m.Cmdy(mdb.INPUTS, m.PrefixKey(), "", kit.Simple(arg))
+}
