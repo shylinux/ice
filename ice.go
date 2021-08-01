@@ -8,7 +8,14 @@ import (
 	kit "github.com/shylinux/toolkits"
 )
 
+type Message struct {
+	*ice.Message
+}
+
 func Run(arg ...string) string {
+	ice.Pulse.Set("detail")
+	ice.Pulse.Set("append")
+	ice.Pulse.Set("result")
 	return ice.Run(arg...)
 }
 func RunServe(port string, arg ...string) string {
