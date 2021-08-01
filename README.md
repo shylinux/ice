@@ -19,7 +19,7 @@ func main() {
 ```
 
 ```sh
-# run main.go and visit 0.0.0.0:9090/ (for windows "localhost:9090/") on browser
+# run main.go and visit http://localhost:9090/ on browser
 $ go run main.go
 ```
 
@@ -38,7 +38,7 @@ func main() {
 ```
 
 ```sh
-# run main.go and visit 0.0.0.0:9090/demo/tool (for windows "localhost:9090/demo/tool") on browser
+# run main.go and visit http://localhost:9090/demo/tool on browser
 $ go run main.go
 ```
 
