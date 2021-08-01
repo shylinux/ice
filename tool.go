@@ -2,6 +2,7 @@ package ice
 
 import (
 	"path"
+	"strings"
 
 	ice "github.com/shylinux/icebergs"
 	"github.com/shylinux/icebergs/base/ctx"
@@ -9,7 +10,11 @@ import (
 	kit "github.com/shylinux/toolkits"
 )
 
-type Tool struct{ Data }
+type Tool struct {
+	Data
+	HTML string
+	Home string
+}
 
 func (t Tool) Push(m *Message, cmd string, arg ...string) {
 	m.Push("index", cmd)
@@ -29,7 +34,11 @@ func (t Tool) Run(m *Message, arg ...string) {
 	m.Cmdy(arg)
 }
 func (t Tool) List(m *Message, arg ...string) {
-	m.RenderDownload(path.Join(m.Conf(web.SERVE, kit.Keym(ice.VOLCANOS, kit.MDB_PATH)), "page/cmd.html"))
+	if strings.HasSuffix(m.R.URL.Path, "/") {
+		m.RenderDownload(kit.Select(path.Join(m.Conf(web.SERVE, kit.Keym(ice.VOLCANOS, kit.MDB_PATH)), "page/cmd.html"), path.Join(t.Home, "cmd.html")))
+		return
+	}
+	m.RenderDownload(path.Join(kit.Select(m.Conf(web.SERVE, kit.Keym(ice.VOLCANOS, kit.MDB_PATH)), t.Home), path.Join(arg...)))
 }
 func (t Tool) Show(key string, show []*Show) []*Show {
 	return append([]*Show{
