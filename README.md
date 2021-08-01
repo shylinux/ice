@@ -42,3 +42,5 @@ func main() {
 $ go run main.go
 ```
 
+visit <http://localhost:9090/demo/tool> on browser
+
