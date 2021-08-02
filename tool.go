@@ -34,11 +34,12 @@ func (t Tool) Run(m *Message, arg ...string) {
 	m.Cmdy(arg)
 }
 func (t Tool) List(m *Message, arg ...string) {
+	sp := m.Conf(web.SERVE, kit.Keym(ice.VOLCANOS, kit.MDB_PATH))
 	if strings.HasSuffix(m.R.URL.Path, "/") {
-		m.RenderDownload(kit.Select(path.Join(m.Conf(web.SERVE, kit.Keym(ice.VOLCANOS, kit.MDB_PATH)), "page/cmd.html"), path.Join(t.Home, "cmd.html")))
+		m.RenderDownload(kit.Select(path.Join(sp, "page/cmd.html"), path.Join(t.Home, "cmd.html")))
 		return
 	}
-	m.RenderDownload(path.Join(kit.Select(m.Conf(web.SERVE, kit.Keym(ice.VOLCANOS, kit.MDB_PATH)), t.Home), path.Join(arg...)))
+	m.RenderDownload(path.Join(kit.Select(sp, t.Home), path.Join(arg...)))
 }
 func (t Tool) Show(key string, show []*Show) []*Show {
 	return append([]*Show{
