@@ -34,18 +34,17 @@ func (t Tool) Run(m *Message, arg ...string) {
 	m.Cmdy(arg)
 }
 func (t Tool) List(m *Message, arg ...string) {
-	sp := m.Conf(web.SERVE, kit.Keym(ice.VOLCANOS, kit.MDB_PATH))
 	if strings.HasSuffix(m.R.URL.Path, "/") {
-		m.RenderDownload(kit.Select(path.Join(sp, "page/cmd.html"), path.Join(t.Home, "cmd.html")))
+		m.RenderDownload(path.Join(m.Conf(web.SERVE, kit.Keym(ice.VOLCANOS, kit.MDB_PATH)), "page/cmd.html"))
 		return
 	}
-	m.RenderDownload(path.Join(kit.Select(sp, t.Home), path.Join(arg...)))
+	m.RenderDownload(path.Join(t.Home, path.Join(arg...)))
 }
-func (t Tool) Show(key string, show []*Show) []*Show {
+func (t Tool) Show(show []*Show) []*Show {
 	return append([]*Show{
 		{Name: "command cmd...", Help: "命令"},
 		{Name: "run", Help: "执行"},
-		{Name: _name(key, -1) + " hash auto command", Help: "工具"},
+		{Name: "list hash auto command", Help: "工具"},
 	}, show...)
 }
 func (t Tool) ShortDef() string { return "" }

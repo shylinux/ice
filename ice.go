@@ -21,7 +21,3 @@ func Run(arg ...string) string {
 func RunServe(port string, arg ...string) string {
 	return ice.Run(kit.Simple("serve", "start", "dev", "", "port", port, arg)...)
 }
-func RunPage(port string, path string, cb func(*Page)) {
-	App("web", path, cb)
-	RunServe(port)
-}

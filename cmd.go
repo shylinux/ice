@@ -59,7 +59,7 @@ func Cmd(key string, obj interface{}, shows ...[]*Show) {
 			continue
 		}
 		if shower, ok := v.Field(i).Interface().(Shower); ok {
-			show = shower.Show(key, show)
+			show = shower.Show(show)
 			cmd(command, v.Field(i).Interface())
 			for _, k := range []string{"short", "field"} {
 				kit.Value(meta, k, t.Field(i).Tag.Get(k))
@@ -67,30 +67,29 @@ func Cmd(key string, obj interface{}, shows ...[]*Show) {
 			continue
 		}
 
-		switch t.Field(i).Name {
-		case "Name":
-			command.Name = v.Field(i).String()
-		case "Help":
-			command.Help = v.Field(i).String()
+		switch key, val := strings.ToLower(t.Field(i).Name), v.Field(i).String(); key {
+		case "name":
+			command.Name = val
+		case "help":
+			command.Help = val
 		default:
-			kit.Value(meta, strings.ToLower(t.Field(i).Name), v.Field(i).String())
+			kit.Value(meta, key, val)
 		}
 	}
 
 	if shower, ok := obj.(Shower); ok {
+		show = shower.Show(show)
 		if kit.Format(kit.Value(meta, kit.MDB_SHORT)) == "" {
 			kit.Value(meta, kit.MDB_SHORT, shower.ShortDef())
 		}
-		show = shower.Show(key, show)
 	}
 	cmd(command, obj)
 
 	list := strings.Split(key, ".")
 	for _, show := range show {
 		key := strings.Split(show.Name, " ")[0]
-
-		log.Debug(key, list[len(list)-1])
-		if key == list[len(list)-1] {
+		if key == list[len(list)-1] || key == "list" {
+			show.Name = strings.Replace(show.Name, "list", list[len(list)-1], 1)
 			config.Name = show.Name
 			config.Help = show.Help
 			command.Name = show.Name

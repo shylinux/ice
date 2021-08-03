@@ -24,11 +24,11 @@ func (p Page) Command(m *Message, arg ...string) {
 	}
 	m.Cmdy(ctx.COMMAND, arg)
 }
-func (p Page) Show(key string, show []*Show) []*Show {
+func (p Page) Show(show []*Show) []*Show {
 	return append([]*Show{
 		{Name: "command cmd...", Help: "命令"},
 		{Name: "run", Help: "执行"},
-		{Name: _name(key, -1) + " hash auto command", Help: "工具"},
+		{Name: "list hash auto command", Help: "工具"},
 	}, show...)
 }
 func (p Page) ShortDef() string { return "" }

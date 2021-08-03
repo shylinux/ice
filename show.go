@@ -6,7 +6,7 @@ type Show struct {
 }
 
 type Shower interface {
-	Show(key string, show []*Show) []*Show
+	Show(show []*Show) []*Show
 	ShortDef() string
 	FieldDef() string
 }

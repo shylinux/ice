@@ -38,14 +38,14 @@ func (z Zone) List(m *Message, arg ...string) {
 	m.Fields(len(arg), "time,"+z.Short(m)+",count", z.Field(m))
 	z.Data.Select(m, mdb.ZONE, arg)
 }
-func (z Zone) Show(key string, show []*Show) []*Show {
+func (z Zone) Show(show []*Show) []*Show {
 	return append([]*Show{
 		{Name: "create zone", Help: "创建"},
 		{Name: "insert zone type name text", Help: "添加"},
 		{Name: "modify", Help: "编辑"},
 		{Name: "remove", Help: "删除"},
 		{Name: "inputs", Help: "补全"},
-		{Name: _name(key, -1) + " zone id auto insert", Help: "存储"},
+		{Name: "list zone id auto insert", Help: "存储"},
 	}, show...)
 }
 func (z Zone) ShortDef() string { return kit.MDB_ZONE }

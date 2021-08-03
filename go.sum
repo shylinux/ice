@@ -4,8 +4,6 @@ github.com/creack/pty v1.1.7/go.mod h1:lj5s0c3V2DBrqTV7llrYr5NG6My20zk30Fl46Y7Do
 github.com/gorilla/websocket v1.4.2 h1:+/TMaTYc4QFitKJxsQ7Yye35DkWvkdLcvGKqM+x0Ufc=
 github.com/gorilla/websocket v1.4.2/go.mod h1:YR8l580nyteQvAITg2hZ9XVh4b55+EU/adAjf1fMHhE=
 github.com/kr/pty v1.1.8/go.mod h1:O1sed60cT9XZ5uDucP5qwvh+TE3NnUj51EiZO/lmSfw=
-github.com/shylinux/icebergs v0.3.6 h1:T28XzlrPCBV/NDmYt+k0DJ6erto7XNACLshheCLBWGo=
-github.com/shylinux/icebergs v0.3.6/go.mod h1:6Rni5lYwIshp1vfdsZSd/MGbbtgDNPy8mHYeuzVsDUo=
 github.com/shylinux/icebergs v0.3.7 h1:IbTmp6B+7M6B0XEwHw/tQds8EtbkPHqh4RyOfA6BR5Y=
 github.com/shylinux/icebergs v0.3.7/go.mod h1:6Rni5lYwIshp1vfdsZSd/MGbbtgDNPy8mHYeuzVsDUo=
 github.com/shylinux/toolkits v0.2.6 h1:fqoMRKxcyunPYzrcZh3UaogwOv6Zm8TjXK3XDg/xGNE=
