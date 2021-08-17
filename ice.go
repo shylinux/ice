@@ -13,9 +13,9 @@ type Message struct {
 }
 
 func Run(arg ...string) string {
-	ice.Pulse.Set("detail")
-	ice.Pulse.Set("append")
-	ice.Pulse.Set("result")
+	ice.Pulse.Set(ice.MSG_DETAIL)
+	ice.Pulse.Set(ice.MSG_APPEND)
+	ice.Pulse.Set(ice.MSG_RESULT)
 	return ice.Run(arg...)
 }
 func RunServe(port string, arg ...string) string {
