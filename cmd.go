@@ -5,10 +5,10 @@ import (
 	"reflect"
 	"strings"
 
-	ice "github.com/shylinux/icebergs"
-	"github.com/shylinux/icebergs/base/web"
-	kit "github.com/shylinux/toolkits"
-	log "github.com/shylinux/toolkits/logs"
+	ice "shylinux.com/x/icebergs"
+	"shylinux.com/x/icebergs/base/web"
+	kit "shylinux.com/x/toolkits"
+	log "shylinux.com/x/toolkits/logs"
 )
 
 func ref(obj interface{}) (reflect.Type, reflect.Value) {

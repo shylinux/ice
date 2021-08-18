@@ -11,7 +11,7 @@ $ cat main.go
 ```go
 package main
 
-import "github.com/shylinux/ice"
+import "shylinux.com/x/ice"
 
 func main() {
 	ice.RunServe("9090") // listen and serve on 0.0.0.0:9090 (for windows "localhost:9090")

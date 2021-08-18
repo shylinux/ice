@@ -4,7 +4,7 @@ import (
 	"path"
 	"strings"
 
-	"github.com/shylinux/icebergs/base/nfs"
+	"shylinux.com/x/icebergs/base/nfs"
 )
 
 type Nav struct {

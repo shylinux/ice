@@ -1,7 +1,7 @@
 package ice
 
 import (
-	ice "github.com/shylinux/icebergs"
+	ice "shylinux.com/x/icebergs"
 )
 
 func init() {

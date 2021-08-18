@@ -1,11 +1,11 @@
 package ice
 
 import (
-	ice "github.com/shylinux/icebergs"
-	_ "github.com/shylinux/icebergs/base"
-	_ "github.com/shylinux/icebergs/core"
-	_ "github.com/shylinux/icebergs/misc"
-	kit "github.com/shylinux/toolkits"
+	ice "shylinux.com/x/icebergs"
+	_ "shylinux.com/x/icebergs/base"
+	_ "shylinux.com/x/icebergs/core"
+	_ "shylinux.com/x/icebergs/misc"
+	kit "shylinux.com/x/toolkits"
 )
 
 type Message struct {

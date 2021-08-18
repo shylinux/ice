@@ -3,8 +3,8 @@ package ice
 import (
 	"strings"
 
-	"github.com/shylinux/icebergs/base/ctx"
-	kit "github.com/shylinux/toolkits"
+	"shylinux.com/x/icebergs/base/ctx"
+	kit "shylinux.com/x/toolkits"
 )
 
 type Page struct {
