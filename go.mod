@@ -3,6 +3,6 @@ module shylinux.com/x/ice
 go 1.15
 
 require (
-	github.com/shylinux/icebergs v0.3.9
-	github.com/shylinux/toolkits v0.2.7
+	shylinux.com/x/icebergs v0.4.0
+	shylinux.com/x/toolkits v0.3.0
 )
