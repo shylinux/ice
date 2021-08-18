@@ -1,4 +1,4 @@
-module github.com/shylinux/ice
+module shylinux.com/x/ice
 
 go 1.15
 
