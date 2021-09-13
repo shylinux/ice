@@ -1,14 +1,12 @@
 package ice
 
 import (
-	"fmt"
 	"reflect"
 	"strings"
 
 	ice "shylinux.com/x/icebergs"
 	"shylinux.com/x/icebergs/base/web"
 	kit "shylinux.com/x/toolkits"
-	log "shylinux.com/x/toolkits/logs"
 )
 
 func ref(obj interface{}) (reflect.Type, reflect.Value) {
@@ -122,7 +120,6 @@ func Cmd(key string, obj interface{}, shows ...[]*Show) {
 					list[len(list)-1]: command,
 				},
 			}
-			log.Debug(fmt.Sprintf("%s %s %s.%s", last.Name, "<-", context.Name))
 
 			if !has {
 				last.Register(context, &web.Frame{})
@@ -134,7 +131,6 @@ func Cmd(key string, obj interface{}, shows ...[]*Show) {
 
 		if !has {
 			context := &ice.Context{Name: list[i-1]}
-			log.Debug(last.Name, "<-", context.Name)
 			last.Register(context, &web.Frame{})
 			last = context
 		}
