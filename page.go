@@ -34,7 +34,7 @@ func (p Page) Show(show []*Show) []*Show {
 func (p Page) ShortDef() string { return "" }
 func (p Page) FieldDef() string { return "time,hash,type,name,text" }
 
-func (p *Page) Cmd(key string, obj interface{}, shows ...[]*Show) *Page {
+func (p *Page) Cmd(key string, obj interface{}, shows ...*Show) *Page {
 	switch obj := obj.(type) {
 	case string:
 		if p.args == nil {

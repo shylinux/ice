@@ -7,6 +7,7 @@ import (
 	ice "shylinux.com/x/icebergs"
 	"shylinux.com/x/icebergs/base/web"
 	kit "shylinux.com/x/toolkits"
+	log "shylinux.com/x/toolkits/logs"
 )
 
 func ref(obj interface{}) (reflect.Type, reflect.Value) {
@@ -41,18 +42,18 @@ func cmd(command *ice.Command, obj interface{}) {
 		}
 	}
 }
-func Cmd(key string, obj interface{}, shows ...[]*Show) {
+func Cmd(key string, obj interface{}, shows ...*Show) {
 	command := &ice.Command{Action: map[string]*ice.Action{}}
 	config := &ice.Config{Value: kit.Data()}
 	meta := kit.Value(config.Value, kit.MDB_META)
 
 	show := []*Show{}
-	for _, s := range shows {
-		show = append(show, s...)
-	}
 
 	t, v := ref(obj)
 	for i := 0; i < v.NumField(); i++ {
+		if t.Field(i).Tag.Get("name") != "" {
+			show = append(show, &Show{Name: t.Field(i).Tag.Get("name"), Help: t.Field(i).Tag.Get("help")})
+		}
 		if !v.Field(i).CanInterface() {
 			continue
 		}
@@ -74,6 +75,7 @@ func Cmd(key string, obj interface{}, shows ...[]*Show) {
 			kit.Value(meta, key, val)
 		}
 	}
+	cmd(command, obj)
 
 	if shower, ok := obj.(Shower); ok {
 		show = shower.Show(show)
@@ -81,24 +83,27 @@ func Cmd(key string, obj interface{}, shows ...[]*Show) {
 			kit.Value(meta, kit.MDB_SHORT, shower.ShortDef())
 		}
 	}
-	cmd(command, obj)
+	for _, s := range shows {
+		show = append(show, s)
+	}
 
 	list := strings.Split(key, ".")
-	for _, show := range show {
-		key := strings.Split(show.Name, " ")[0]
+	for _, s := range show {
+		key := strings.Split(s.Name, " ")[0]
 		if key == list[len(list)-1] || key == "list" {
-			show.Name = strings.Replace(show.Name, "list", list[len(list)-1], 1)
-			config.Name = show.Name
-			config.Help = show.Help
-			command.Name = show.Name
-			command.Help = show.Help
+			s.Name = strings.Replace(s.Name, "list", list[len(list)-1], 1)
+			config.Name = s.Name
+			config.Help = s.Help
+			command.Name = s.Name
+			command.Help = s.Help
 			continue
 		}
 		if action, ok := command.Action[key]; ok {
-			action.Name = show.Name
-			action.Help = show.Help
+			action.Name = s.Name
+			action.Help = s.Help
 		}
 	}
+	log.Debug(kit.Format("what %+v", command))
 
 	last := ice.Index
 	for i := 1; i < len(list); i++ {
