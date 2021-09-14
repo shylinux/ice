@@ -7,7 +7,6 @@ import (
 	ice "shylinux.com/x/icebergs"
 	"shylinux.com/x/icebergs/base/web"
 	kit "shylinux.com/x/toolkits"
-	log "shylinux.com/x/toolkits/logs"
 )
 
 func ref(obj interface{}) (reflect.Type, reflect.Value) {
@@ -103,7 +102,6 @@ func Cmd(key string, obj interface{}, shows ...*Show) {
 			action.Help = s.Help
 		}
 	}
-	log.Debug(kit.Format("what %+v", command))
 
 	last := ice.Index
 	for i := 1; i < len(list); i++ {
