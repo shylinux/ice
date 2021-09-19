@@ -13,8 +13,7 @@ func ref(obj interface{}) (reflect.Type, reflect.Value) {
 	t := reflect.TypeOf(obj)
 	v := reflect.ValueOf(obj)
 	if t.Kind() == reflect.Ptr {
-		t = t.Elem()
-		v = v.Elem()
+		t, v = t.Elem(), v.Elem()
 	}
 	return t, v
 }
@@ -25,122 +24,80 @@ func val(m *ice.Message, arg ...string) []reflect.Value {
 	}
 	return args
 }
-func cmd(command *ice.Command, obj interface{}) {
+func trans(config *ice.Config, command *ice.Command, obj interface{}) {
 	t, v := ref(obj)
+	for i := 0; i < v.NumField(); i++ {
+		if t.Field(i).Type.Kind() == reflect.Struct {
+			if v.Field(i).CanInterface() {
+				trans(config, command, v.Field(i).Interface())
+			}
+		}
+	}
+
 	for i := 0; i < v.NumMethod(); i++ {
 		method := v.Method(i)
+		h := func(m *ice.Message, arg ...string) { method.Call(val(m, arg...)) }
 
 		if key := strings.ToLower(t.Method(i).Name); key == "list" {
-			command.Hand = func(m *ice.Message, c *ice.Context, cmd string, arg ...string) {
-				method.Call(val(m, arg...))
-			}
+			command.Hand = func(m *ice.Message, c *ice.Context, cmd string, arg ...string) { h(m, arg...) }
 		} else {
-			command.Action[key] = &ice.Action{Hand: func(m *ice.Message, arg ...string) {
-				method.Call(val(m, arg...))
-			}}
+			if action, ok := command.Action[key]; !ok {
+				command.Action[key] = &ice.Action{Hand: h}
+			} else {
+				action.Hand = h
+			}
+		}
+	}
+
+	meta := kit.Value(config.Value, kit.MDB_META)
+	for i := 0; i < v.NumField(); i++ {
+		key, tag := t.Field(i).Name, t.Field(i).Tag
+		if data := tag.Get("data"); data != "" {
+			kit.Value(meta, key, data)
+		}
+
+		if name := tag.Get("name"); name != "" {
+			if help := tag.Get("help"); key == "list" {
+				command.Name, command.Help = name, help
+				config.Name, config.Help = name, help
+			} else if action, ok := command.Action[key]; ok {
+				action.Name, action.Help = name, help
+			}
 		}
 	}
 }
-func Cmd(key string, obj interface{}, shows ...*Show) {
+func Cmd(key string, obj interface{}) {
+	if obj == nil {
+		return
+	}
 	command := &ice.Command{Action: map[string]*ice.Action{}}
 	config := &ice.Config{Value: kit.Data()}
-	meta := kit.Value(config.Value, kit.MDB_META)
-
-	show := []*Show{}
-
-	t, v := ref(obj)
-	for i := 0; i < v.NumField(); i++ {
-		if t.Field(i).Tag.Get("name") != "" {
-			show = append(show, &Show{Name: t.Field(i).Tag.Get("name"), Help: t.Field(i).Tag.Get("help")})
-		}
-		if !v.Field(i).CanInterface() {
-			continue
-		}
-		if shower, ok := v.Field(i).Interface().(Shower); ok {
-			show = shower.Show(show)
-			cmd(command, v.Field(i).Interface())
-			for _, k := range []string{"short", "field"} {
-				kit.Value(meta, k, t.Field(i).Tag.Get(k))
-			}
-			continue
-		}
-
-		switch key, val := strings.ToLower(t.Field(i).Name), v.Field(i).String(); key {
-		case "name":
-			command.Name = val
-		case "help":
-			command.Help = val
-		default:
-			kit.Value(meta, key, val)
-		}
-	}
-	cmd(command, obj)
-
-	if shower, ok := obj.(Shower); ok {
-		show = shower.Show(show)
-		if kit.Format(kit.Value(meta, kit.MDB_SHORT)) == "" {
-			kit.Value(meta, kit.MDB_SHORT, shower.ShortDef())
-		}
-	}
-	for _, s := range shows {
-		show = append(show, s)
-	}
-
-	list := strings.Split(key, ".")
-	for _, s := range show {
-		key := strings.Split(s.Name, " ")[0]
-		if key == list[len(list)-1] || key == "list" {
-			s.Name = strings.Replace(s.Name, "list", list[len(list)-1], 1)
-			config.Name = s.Name
-			config.Help = s.Help
-			command.Name = s.Name
-			command.Help = s.Help
-			continue
-		}
-		if action, ok := command.Action[key]; ok {
-			action.Name = s.Name
-			action.Help = s.Help
-		}
-	}
+	trans(config, command, obj)
 
 	last := ice.Index
+	list := strings.Split(key, ".")
 	for i := 1; i < len(list); i++ {
 		has := false
 		ice.Pulse.Search(strings.Join(list[:i], ".")+".", func(p *ice.Context, s *ice.Context) {
 			has, last = true, s
 		})
-
-		if i == len(list)-1 {
-			context := &ice.Context{Name: list[len(list)-2],
-				Configs: map[string]*ice.Config{list[len(list)-1]: config},
-				Commands: map[string]*ice.Command{
-					ice.CTX_INIT: {Hand: func(m *ice.Message, c *ice.Context, cmd string, arg ...string) {
-						m.Load()
-					}},
-					ice.CTX_EXIT: {Hand: func(m *ice.Message, c *ice.Context, cmd string, arg ...string) {
-						m.Save()
-					}},
-					list[len(list)-1]: command,
-				},
-			}
-
-			if !has {
-				last.Register(context, &web.Frame{})
-			} else {
-				last.Merge(context)
-			}
-			break
-		}
-
 		if !has {
 			context := &ice.Context{Name: list[i-1]}
 			last.Register(context, &web.Frame{})
 			last = context
 		}
-	}
-}
+		if i < len(list)-1 {
+			continue
+		}
 
-func _name(key string, index int) string {
-	list := strings.Split(key, ".")
-	return list[(len(list)+index)%len(list)]
+		last.Merge(&ice.Context{Commands: map[string]*ice.Command{
+			ice.CTX_INIT: {Hand: func(m *ice.Message, c *ice.Context, cmd string, arg ...string) {
+				m.Load()
+			}},
+			ice.CTX_EXIT: {Hand: func(m *ice.Message, c *ice.Context, cmd string, arg ...string) {
+				m.Save()
+			}},
+			list[i]: command,
+		}, Configs: map[string]*ice.Config{list[i]: config}})
+	}
 }

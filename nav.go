@@ -8,9 +8,13 @@ import (
 )
 
 type Nav struct {
-	Data
+	Tool
+
 	Home   string
 	Prefix string
+
+	up   string `name:"up" help:"上一级"`
+	list string `name:"path auto up" help:"导航"`
 }
 
 func (n Nav) Up(m *Message, arg ...string) {
@@ -32,12 +36,3 @@ func (n Nav) List(m *Message, arg ...string) {
 	m.Option(nfs.DIR_ROOT, path.Join(n.Home, strings.TrimPrefix(path.Dir(m.R.URL.Path), n.Prefix)))
 	m.Cmdy(nfs.DIR, arg)
 }
-
-func (n Nav) Show(show []*Show) []*Show {
-	return append([]*Show{
-		{Name: "up", Help: "上一级"},
-		{Name: "list path auto up", Help: "导航"},
-	}, show...)
-}
-func (n Nav) ShortDef() string { return "" }
-func (n Nav) FieldDef() string { return "time,hash,type,name,text" }

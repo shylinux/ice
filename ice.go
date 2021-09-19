@@ -8,9 +8,7 @@ import (
 	kit "shylinux.com/x/toolkits"
 )
 
-type Message struct {
-	*ice.Message
-}
+type Message struct{ *ice.Message }
 
 func Run(arg ...string) string {
 	ice.Pulse.Set(ice.MSG_DETAIL)
