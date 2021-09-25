@@ -36,7 +36,15 @@ func trans(config *ice.Config, command *ice.Command, obj interface{}) {
 
 	for i := 0; i < v.NumMethod(); i++ {
 		method := v.Method(i)
-		h := func(m *ice.Message, arg ...string) { method.Call(val(m, arg...)) }
+		var h func(*ice.Message, ...string)
+		switch method.Interface().(type) {
+		case func(*Message, ...string):
+			h = func(m *ice.Message, arg ...string) { method.Call(val(m, arg...)) }
+		case func(*Message):
+			h = func(m *ice.Message, arg ...string) { method.Call(val(m)) }
+		default:
+			continue
+		}
 
 		if key := strings.ToLower(t.Method(i).Name); key == "list" {
 			command.Hand = func(m *ice.Message, c *ice.Context, cmd string, arg ...string) { h(m, arg...) }
