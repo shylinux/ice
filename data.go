@@ -7,7 +7,7 @@ import (
 
 type Data struct {
 	inputs string `name:"inputs" help:"补全"`
-	remove string `name:"remove" help:"删除"`
+	remove string `name:"delete" help:"删除"`
 	modify string `name:"modify" help:"编辑"`
 }
 

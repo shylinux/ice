@@ -12,6 +12,7 @@ type Hash struct {
 	field string `data:"time,hash,type,name,text"`
 
 	create string `name:"create type name text" help:"创建"`
+	remove string `name:"remove" help:"删除"`
 	list   string `name:"list hash auto create" help:"缓存"`
 }
 
