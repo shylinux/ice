@@ -1,8 +1,8 @@
 module shylinux.com/x/ice
 
-go 1.15
+go 1.11
 
 require (
-	shylinux.com/x/icebergs v0.4.4
-	shylinux.com/x/toolkits v0.3.1
+	shylinux.com/x/icebergs v0.4.7
+	shylinux.com/x/toolkits v0.3.2
 )
