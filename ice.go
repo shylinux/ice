@@ -10,6 +10,10 @@ import (
 
 type Message struct{ *ice.Message }
 
+func (m *Message) Spawn() *Message {
+	return &Message{m.Message.Spawn()}
+}
+
 func Run(arg ...string) string {
 	ice.Pulse.Set(ice.MSG_DETAIL)
 	ice.Pulse.Set(ice.MSG_APPEND)

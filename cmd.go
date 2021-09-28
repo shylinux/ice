@@ -100,7 +100,11 @@ func Cmd(key string, obj interface{}) {
 
 		last.Merge(&ice.Context{Commands: map[string]*ice.Command{
 			ice.CTX_INIT: {Hand: func(m *ice.Message, c *ice.Context, cmd string, arg ...string) {
-				m.Load()
+				if action, ok := command.Action["init"]; ok {
+					action.Hand(m, arg...)
+				} else {
+					m.Load()
+				}
 			}},
 			ice.CTX_EXIT: {Hand: func(m *ice.Message, c *ice.Context, cmd string, arg ...string) {
 				m.Save()
