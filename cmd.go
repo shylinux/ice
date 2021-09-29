@@ -24,16 +24,8 @@ func val(m *ice.Message, arg ...string) []reflect.Value {
 	}
 	return args
 }
-func trans(config *ice.Config, command *ice.Command, obj interface{}) {
+func transMethod(config *ice.Config, command *ice.Command, obj interface{}) {
 	t, v := ref(obj)
-	for i := 0; i < v.NumField(); i++ {
-		if t.Field(i).Type.Kind() == reflect.Struct {
-			if v.Field(i).CanInterface() {
-				trans(config, command, v.Field(i).Interface())
-			}
-		}
-	}
-
 	for i := 0; i < v.NumMethod(); i++ {
 		method := v.Method(i)
 		var h func(*ice.Message, ...string)
@@ -53,6 +45,17 @@ func trans(config *ice.Config, command *ice.Command, obj interface{}) {
 				command.Action[key] = &ice.Action{Hand: h}
 			} else {
 				action.Hand = h
+			}
+		}
+	}
+
+}
+func transField(config *ice.Config, command *ice.Command, obj interface{}) {
+	t, v := ref(obj)
+	for i := 0; i < v.NumField(); i++ {
+		if t.Field(i).Type.Kind() == reflect.Struct {
+			if v.Field(i).CanInterface() {
+				transField(config, command, v.Field(i).Interface())
 			}
 		}
 	}
@@ -80,7 +83,8 @@ func Cmd(key string, obj interface{}) {
 	}
 	command := &ice.Command{Action: map[string]*ice.Action{}}
 	config := &ice.Config{Value: kit.Data()}
-	trans(config, command, obj)
+	transMethod(config, command, obj)
+	transField(config, command, obj)
 
 	last := ice.Index
 	list := strings.Split(key, ".")
