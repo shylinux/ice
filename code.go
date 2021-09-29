@@ -4,6 +4,7 @@ import (
 	"path"
 
 	"shylinux.com/x/icebergs/base/cli"
+	"shylinux.com/x/icebergs/base/nfs"
 	"shylinux.com/x/icebergs/base/web"
 	"shylinux.com/x/icebergs/core/code"
 	kit "shylinux.com/x/toolkits"
@@ -13,6 +14,7 @@ type Code struct {
 	inputs   string `name:"inputs" help:"补全"`
 	download string `name:"download" help:"下载"`
 	build    string `name:"build" help:"构建"`
+	order    string `name:"order" help:"加载"`
 	start    string `name:"start" help:"启动"`
 	list     string `name:"list port path auto start build download" help:"服务器"`
 }
@@ -25,6 +27,10 @@ func (c Code) Download(m *Message, src string, arg ...string) {
 }
 func (c Code) Build(m *Message, src string, arg ...string) {
 	m.Cmdy(code.INSTALL, cli.BUILD, src, arg)
+}
+func (c Code) Order(m *Message, src, dir string, arg ...string) {
+	m.Cmd(nfs.PUSH, "etc/path", kit.Path(m.Conf(code.INSTALL, kit.META_PATH), kit.TrimExt(src), dir+"\n"))
+	m.Cmdy(nfs.CAT, "etc/path")
 }
 func (c Code) Start(m *Message, src string, arg ...string) {
 	m.Cmdy(code.INSTALL, cli.START, src, arg)
