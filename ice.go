@@ -13,9 +13,6 @@ type Message struct{ *ice.Message }
 func (m *Message) Spawn() *Message {
 	return &Message{m.Message.Spawn()}
 }
-func (m *Message) Config(key string) string {
-	return m.Conf(m.PrefixKey(), kit.Keym(key))
-}
 
 func Run(arg ...string) string {
 	ice.Pulse.Set(ice.MSG_DETAIL)

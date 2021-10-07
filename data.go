@@ -6,9 +6,9 @@ import (
 )
 
 type Data struct {
-	inputs string `name:"inputs" help:"补全"`
 	remove string `name:"delete" help:"删除"`
-	modify string `name:"modify" help:"编辑"`
+	prev   string `name:"prev" help:"上一页"`
+	next   string `name:"next" help:"下一页"`
 }
 
 func (d Data) Short(m *Message) string {
@@ -32,6 +32,12 @@ func (d Data) Modify(m *Message, arg ...interface{}) {
 }
 func (d Data) Select(m *Message, arg ...interface{}) {
 	m.Cmdy(mdb.SELECT, m.PrefixKey(), "", kit.Simple(arg))
+}
+func (d Data) Prev(m *Message, arg ...string) {
+	mdb.PrevPage(m.Message, arg[0], arg[1:]...)
+}
+func (d Data) Next(m *Message, arg ...string) {
+	mdb.NextPage(m.Message, arg[0], arg[1:]...)
 }
 func (d Data) List(m *Message, arg ...string) {
 	m.Echo("hello world")
