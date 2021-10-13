@@ -77,14 +77,23 @@ func transField(config *ice.Config, command *ice.Command, obj interface{}) {
 		}
 	}
 }
+
 func Cmd(key string, obj interface{}) {
 	if obj == nil {
 		return
 	}
-	command := &ice.Command{Action: map[string]*ice.Action{}}
 	config := &ice.Config{Value: kit.Data()}
-	transMethod(config, command, obj)
-	transField(config, command, obj)
+	command := &ice.Command{Action: map[string]*ice.Action{}}
+
+	switch obj := obj.(type) {
+	case func(*Message, ...string):
+		command.Hand = func(m *ice.Message, c *ice.Context, cmd string, arg ...string) {
+			obj(&Message{m}, arg...)
+		}
+	default:
+		transMethod(config, command, obj)
+		transField(config, command, obj)
+	}
 
 	last := ice.Index
 	list := strings.Split(key, ".")
