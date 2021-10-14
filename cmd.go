@@ -77,7 +77,6 @@ func transField(config *ice.Config, command *ice.Command, obj interface{}) {
 		}
 	}
 }
-
 func Cmd(key string, obj interface{}) {
 	if obj == nil {
 		return
@@ -113,7 +112,7 @@ func Cmd(key string, obj interface{}) {
 
 		last.Merge(&ice.Context{Commands: map[string]*ice.Command{
 			ice.CTX_INIT: {Hand: func(m *ice.Message, c *ice.Context, cmd string, arg ...string) {
-				if action, ok := command.Action["init"]; ok {
+				if action, ok := command.Action[ice.INIT]; ok {
 					action.Hand(m, arg...)
 				} else {
 					m.Load()

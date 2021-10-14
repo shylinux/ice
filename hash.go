@@ -27,10 +27,10 @@ func (h Hash) Create(m *Message, arg ...string) {
 	h.Data.Insert(m, mdb.HASH, arg)
 }
 func (h Hash) Remove(m *Message, arg ...string) {
-	h.Data.Delete(m, mdb.HASH, h.Short(m), m.Option(h.Short(m)))
+	h.Data.Delete(m, mdb.HASH, m.OptionSimple(h.Short(m)))
 }
 func (h Hash) Modify(m *Message, arg ...string) {
-	h.Data.Modify(m, mdb.HASH, h.Short(m), m.Option(h.Short(m)), arg)
+	h.Data.Modify(m, mdb.HASH, m.OptionSimple(h.Short(m)), arg)
 }
 func (h Hash) List(m *Message, arg ...string) {
 	m.Fields(len(arg), h.Field(m))

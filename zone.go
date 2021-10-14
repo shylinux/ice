@@ -27,16 +27,16 @@ func (z Zone) Create(m *Message, arg ...string) {
 	z.Data.Insert(m, mdb.HASH, arg)
 }
 func (z Zone) Remove(m *Message, arg ...string) {
-	z.Data.Delete(m, mdb.HASH, z.Short(m), m.Option(z.Short(m)))
+	z.Data.Delete(m, mdb.HASH, m.OptionSimple(z.Short(m)))
 }
 func (z Zone) Insert(m *Message, arg ...string) {
-	z.Data.Insert(m, mdb.HASH, z.Short(m), m.Option(z.Short(m)))
+	z.Data.Insert(m, mdb.HASH, m.OptionSimple(z.Short(m)))
 	z.Data.Insert(m, mdb.ZONE, m.Option(z.Short(m)), arg[2:])
 }
 func (z Zone) Modify(m *Message, arg ...string) {
 	z.Data.Modify(m, mdb.ZONE, m.Option(z.Short(m)), m.Option(kit.MDB_ID), arg)
 }
 func (z Zone) List(m *Message, arg ...string) {
-	m.Fields(len(arg), "time,"+z.Short(m)+",count", z.Field(m))
+	m.Fields(len(arg), kit.Join([]string{kit.MDB_TIME, z.Short(m), kit.MDB_TIME}), z.Field(m))
 	z.Data.Select(m, mdb.ZONE, arg)
 }

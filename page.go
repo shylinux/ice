@@ -30,9 +30,8 @@ func (p *Page) Cmd(key string, obj interface{}) *Page {
 func (p Page) Command(m *Message, arg ...string) {
 	if len(arg) == 0 {
 		for i, _ := range p.list {
-			// m.Push("index", kit.Select(kit.Keys(p.name, item), item, strings.Contains(item, ".")))
-			m.Push("index", i)
-			m.Push("args", kit.Select("[]", p.args[i]))
+			m.Push(kit.MDB_INDEX, i)
+			m.Push(kit.MDB_ARGS, kit.Select("[]", p.args[i]))
 		}
 		return
 	}

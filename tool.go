@@ -17,8 +17,8 @@ type Tool struct {
 func (t Tool) Command(m *Message, arg ...string) {
 	if len(arg) == 0 {
 		m.Cmd(ctx.COMMAND).Table(func(index int, value map[string]string, head []string) {
-			m.Push("index", m.Prefix(value["key"]))
-			m.Push("args", kit.Format(kit.Simple()))
+			m.Push(kit.MDB_INDEX, m.Prefix(value[kit.MDB_KEY]))
+			m.Push(kit.MDB_ARGS, kit.Format(kit.Simple()))
 		})
 		return
 	}

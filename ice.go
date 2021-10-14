@@ -3,6 +3,9 @@ package ice
 import (
 	ice "shylinux.com/x/icebergs"
 	_ "shylinux.com/x/icebergs/base"
+	"shylinux.com/x/icebergs/base/cli"
+	"shylinux.com/x/icebergs/base/tcp"
+	"shylinux.com/x/icebergs/base/web"
 	_ "shylinux.com/x/icebergs/core"
 	_ "shylinux.com/x/icebergs/misc"
 	kit "shylinux.com/x/toolkits"
@@ -21,5 +24,5 @@ func Run(arg ...string) string {
 	return ice.Run(arg...)
 }
 func RunServe(port string, arg ...string) string {
-	return ice.Run(kit.Simple("serve", "start", "dev", "", "port", port, arg)...)
+	return ice.Run(kit.Simple(web.SERVE, cli.START, ice.DEV, "", tcp.PORT, port, arg)...)
 }
