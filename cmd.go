@@ -114,12 +114,12 @@ func Cmd(key string, obj interface{}) {
 			ice.CTX_INIT: {Hand: func(m *ice.Message, c *ice.Context, cmd string, arg ...string) {
 				if action, ok := command.Action[ice.INIT]; ok {
 					action.Hand(m, arg...)
-				} else {
-					m.Load()
 				}
 			}},
 			ice.CTX_EXIT: {Hand: func(m *ice.Message, c *ice.Context, cmd string, arg ...string) {
-				m.Save()
+				if action, ok := command.Action[ice.EXIT]; ok {
+					action.Hand(m, arg...)
+				}
 			}},
 			list[i]: command,
 		}, Configs: map[string]*ice.Config{list[i]: config}})
