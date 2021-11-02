@@ -29,8 +29,12 @@ func (d Data) Modify(m *Message, arg ...interface{}) {
 func (d Data) Select(m *Message, arg ...interface{}) {
 	m.Cmdy(mdb.SELECT, m.PrefixKey(), "", kit.Simple(arg))
 }
-func (d Data) Prev(m *Message, arg ...string) {
-	mdb.PrevPage(m.Message, arg[0], arg[1:]...)
+func (d Data) Export(m *Message, arg ...interface{}) {
+	m.OptionFields(m.Config(kit.META_FIELD))
+	m.Cmdy(mdb.EXPORT, m.PrefixKey(), "", kit.Simple(arg))
+}
+func (d Data) Import(m *Message, arg ...string) {
+	m.Cmdy(mdb.IMPORT, m.PrefixKey(), "", kit.Simple(arg))
 }
 func (d Data) Next(m *Message, arg ...string) {
 	mdb.NextPage(m.Message, arg[0], arg[1:]...)
