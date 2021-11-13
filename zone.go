@@ -37,6 +37,6 @@ func (z Zone) Modify(m *Message, arg ...string) {
 	z.Data.Modify(m, mdb.ZONE, m.Option(z.Short(m)), m.Option(kit.MDB_ID), arg)
 }
 func (z Zone) List(m *Message, arg ...string) {
-	m.Fields(len(arg), kit.Join([]string{kit.MDB_TIME, z.Short(m), kit.MDB_TIME}), z.Field(m))
+	m.Fields(len(arg), kit.Join([]string{kit.MDB_TIME, z.Short(m), kit.MDB_COUNT}), z.Field(m))
 	z.Data.Select(m, mdb.ZONE, arg)
 }
