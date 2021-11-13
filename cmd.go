@@ -48,7 +48,6 @@ func transMethod(config *ice.Config, command *ice.Command, obj interface{}) {
 			}
 		}
 	}
-
 }
 func transField(config *ice.Config, command *ice.Command, obj interface{}) {
 	t, v := ref(obj)
@@ -63,6 +62,14 @@ func transField(config *ice.Config, command *ice.Command, obj interface{}) {
 	meta := kit.Value(config.Value, kit.MDB_META)
 	for i := 0; i < v.NumField(); i++ {
 		key, tag := t.Field(i).Name, t.Field(i).Tag
+		switch key {
+		case "display":
+			for k, v := range ice.Display0(3, tag.Get("data")) {
+				command.Meta[k] = v
+			}
+
+			continue
+		}
 		if data := tag.Get("data"); data != "" {
 			kit.Value(meta, key, data)
 		}
@@ -82,7 +89,7 @@ func Cmd(key string, obj interface{}) {
 		return
 	}
 	config := &ice.Config{Value: kit.Data()}
-	command := &ice.Command{Action: map[string]*ice.Action{}}
+	command := &ice.Command{Action: map[string]*ice.Action{}, Meta: kit.Dict()}
 
 	switch obj := obj.(type) {
 	case func(*Message, ...string):
@@ -95,10 +102,10 @@ func Cmd(key string, obj interface{}) {
 	}
 
 	last := ice.Index
-	list := strings.Split(key, ".")
+	list := strings.Split(key, ice.PT)
 	for i := 1; i < len(list); i++ {
 		has := false
-		ice.Pulse.Search(strings.Join(list[:i], ".")+".", func(p *ice.Context, s *ice.Context) {
+		ice.Pulse.Search(strings.Join(list[:i], ice.PT)+ice.PT, func(p *ice.Context, s *ice.Context) {
 			has, last = true, s
 		})
 		if !has {
