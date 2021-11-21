@@ -89,7 +89,7 @@ func Cmd(key string, obj interface{}) {
 		return
 	}
 	config := &ice.Config{Value: kit.Data()}
-	command := &ice.Command{Action: map[string]*ice.Action{}, Meta: kit.Dict()}
+	command := &ice.Command{Name: "list", Help: "列表", Action: map[string]*ice.Action{}, Meta: kit.Dict()}
 
 	switch obj := obj.(type) {
 	case func(*Message, ...string):
@@ -99,6 +99,9 @@ func Cmd(key string, obj interface{}) {
 	default:
 		transMethod(config, command, obj)
 		transField(config, command, obj)
+	}
+	if strings.HasPrefix(command.Name, "list") {
+		command.Name = strings.Replace(command.Name, "list", kit.Slice(strings.Split(key, "."), -1)[0], 1)
 	}
 
 	last := ice.Index
