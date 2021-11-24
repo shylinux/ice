@@ -68,5 +68,5 @@ func WikiCmd(obj interface{})    { Cmd(kit.Keys("web.wiki", kit.FileName(2)), ob
 func CodeCmd(obj interface{})    { Cmd(kit.Keys("web.code", kit.FileName(2)), obj) }
 func CodeCtxCmd(obj interface{}) { Cmd(kit.Keys("web.code", kit.PathName(2), kit.FileName(2)), obj) }
 func CodeModCmd(obj interface{}) {
-	Cmd(kit.Keys("web.code", strings.TrimSuffix(kit.ModName(obj), "-story"), kit.FileName(2)), obj)
+	Cmd(kit.Keys("web.code", strings.TrimSuffix(kit.ModName(2), "-story"), kit.FileName(2)), obj)
 }
