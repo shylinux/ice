@@ -18,6 +18,7 @@ type Code struct {
 	build    string `name:"build" help:"构建"`
 	order    string `name:"order" help:"定制"`
 	start    string `name:"start" help:"启动"`
+	stop     string `name:"stop" help:"停止"`
 	list     string `name:"list port path auto start order build download" help:"源码"`
 }
 
