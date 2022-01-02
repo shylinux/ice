@@ -36,6 +36,9 @@ func (c Code) Prepare(m *Message, cb interface{}) {
 func (c Code) Download(m *Message, src string, arg ...string) {
 	m.Cmdy(code.INSTALL, web.DOWNLOAD, src, arg)
 }
+func (c Code) Source(m *Message, src string, arg ...string) {
+	m.Cmdy(code.INSTALL, nfs.SOURCE, src, arg)
+}
 func (c Code) Build(m *Message, src string, arg ...string) {
 	m.Cmdy(code.INSTALL, cli.BUILD, src, arg)
 }

@@ -5,6 +5,8 @@ import (
 	"strings"
 
 	ice "shylinux.com/x/icebergs"
+	"shylinux.com/x/icebergs/base/ctx"
+	"shylinux.com/x/icebergs/base/mdb"
 	"shylinux.com/x/icebergs/base/web"
 	kit "shylinux.com/x/toolkits"
 )
@@ -30,6 +32,8 @@ func transMethod(config *ice.Config, command *ice.Command, obj interface{}) {
 		method := v.Method(i)
 		var h func(*ice.Message, ...string)
 		switch method.Interface().(type) {
+		case func(*Message, ...string) *Message:
+			h = func(m *ice.Message, arg ...string) { method.Call(val(m, arg...)) }
 		case func(*Message, ...string):
 			h = func(m *ice.Message, arg ...string) { method.Call(val(m, arg...)) }
 		case func(*Message):
@@ -38,7 +42,7 @@ func transMethod(config *ice.Config, command *ice.Command, obj interface{}) {
 			continue
 		}
 
-		if key := strings.ToLower(t.Method(i).Name); key == "list" {
+		if key := strings.ToLower(t.Method(i).Name); key == mdb.LIST {
 			command.Hand = func(m *ice.Message, c *ice.Context, cmd string, arg ...string) { h(m, arg...) }
 		} else {
 			if action, ok := command.Action[key]; !ok {
@@ -49,6 +53,7 @@ func transMethod(config *ice.Config, command *ice.Command, obj interface{}) {
 		}
 	}
 }
+
 func transField(config *ice.Config, command *ice.Command, obj interface{}) {
 	t, v := ref(obj)
 	for i := 0; i < v.NumField(); i++ {
@@ -59,29 +64,48 @@ func transField(config *ice.Config, command *ice.Command, obj interface{}) {
 		}
 	}
 
-	meta := kit.Value(config.Value, kit.MDB_META)
+	meta := kit.Value(config.Value, mdb.META)
 	for i := 0; i < v.NumField(); i++ {
 		key, tag := t.Field(i).Name, t.Field(i).Tag
 		switch key {
 		case "display":
-			for k, v := range ice.Display0(3, tag.Get("data")) {
+			for k, v := range ice.DisplayRequire(3, tag.Get("data")) {
 				command.Meta[k] = v
 			}
-
 			continue
 		}
 		if data := tag.Get("data"); data != "" {
 			kit.Value(meta, key, data)
 		}
 
-		if name := tag.Get("name"); name != "" {
-			if help := tag.Get("help"); key == "list" {
-				command.Name, command.Help = name, help
-				config.Name, config.Help = name, help
-			} else if action, ok := command.Action[key]; ok {
-				action.Name, action.Help = name, help
-			}
+		name := tag.Get(mdb.NAME)
+		if name == "" {
+			continue
 		}
+
+		if help := tag.Get(mdb.HELP); key == mdb.LIST {
+			config.Name, config.Help = name, help
+			command.Name, command.Help = name, help
+		} else if action, ok := command.Action[key]; ok {
+			action.Name, action.Help = name, help
+		}
+
+		h := tag.Get("http")
+		if h == "" {
+			continue
+		}
+
+		hand := func(msg *Message, arg ...string) { msg.Cmdy(msg.CommandKey(), ctx.ACTION, key, arg) }
+		if key == mdb.LIST {
+			hand = func(msg *Message, arg ...string) { msg.Cmdy(msg.CommandKey(), arg) }
+		}
+		last := command.Action[ice.CTX_INIT]
+		command.Action[ice.CTX_INIT] = &ice.Action{Hand: func(m *ice.Message, arg ...string) {
+			if last != nil && last.Hand != nil {
+				last.Hand(m, arg...)
+			}
+			(&Message{m}).HTTP(h, hand)
+		}}
 	}
 }
 func Cmd(key string, obj interface{}) {
@@ -89,7 +113,7 @@ func Cmd(key string, obj interface{}) {
 		return
 	}
 	config := &ice.Config{Value: kit.Data()}
-	command := &ice.Command{Name: "list", Help: "列表", Action: map[string]*ice.Action{}, Meta: kit.Dict()}
+	command := &ice.Command{Name: mdb.LIST, Help: "列表", Action: map[string]*ice.Action{}, Meta: kit.Dict()}
 
 	switch obj := obj.(type) {
 	case func(*Message, ...string):
@@ -100,8 +124,8 @@ func Cmd(key string, obj interface{}) {
 		transMethod(config, command, obj)
 		transField(config, command, obj)
 	}
-	if strings.HasPrefix(command.Name, "list") {
-		command.Name = strings.Replace(command.Name, "list", kit.Slice(strings.Split(key, "."), -1)[0], 1)
+	if strings.HasPrefix(command.Name, mdb.LIST) {
+		command.Name = strings.Replace(command.Name, mdb.LIST, kit.Slice(strings.Split(key, "."), -1)[0], 1)
 	}
 
 	last := ice.Index

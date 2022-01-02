@@ -36,7 +36,17 @@ func (z Zone) Insert(m *Message, arg ...string) {
 func (z Zone) Modify(m *Message, arg ...string) {
 	z.Data.Modify(m, mdb.ZONE, m.Option(z.Short(m)), m.Option(kit.MDB_ID), arg)
 }
-func (z Zone) List(m *Message, arg ...string) {
+func (z Zone) Export(m *Message, arg ...string) {
+	z.Data.Export(m, mdb.ZONE, arg)
+}
+func (z Zone) Import(m *Message, arg ...string) {
+	z.Data.Import(m, mdb.ZONE, arg)
+}
+func (z Zone) List(m *Message, arg ...string) *Message {
 	m.Fields(len(arg), kit.Join([]string{kit.MDB_TIME, z.Short(m), kit.MDB_COUNT}), z.Field(m))
 	z.Data.Select(m, mdb.ZONE, arg)
+	if len(arg) == 0 {
+		m.PushAction(z.Remove)
+	}
+	return m
 }

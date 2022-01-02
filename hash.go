@@ -23,8 +23,12 @@ func (h Hash) Short(m *Message) string {
 func (h Hash) Inputs(m *Message, arg ...string) {
 	h.Data.Inputs(m, mdb.HASH, arg)
 }
-func (h Hash) Create(m *Message, arg ...string) {
+func (h Hash) Prunes(m *Message, arg ...string) {
+	h.Data.Prunes(m, mdb.HASH, arg)
+}
+func (h Hash) Create(m *Message, arg ...string) *Message {
 	h.Data.Insert(m, mdb.HASH, arg)
+	return m
 }
 func (h Hash) Remove(m *Message, arg ...string) {
 	h.Data.Delete(m, mdb.HASH, m.OptionSimple(h.Short(m)))
@@ -35,4 +39,5 @@ func (h Hash) Modify(m *Message, arg ...string) {
 func (h Hash) List(m *Message, arg ...string) {
 	m.Fields(len(arg), h.Field(m))
 	h.Data.Select(m, mdb.HASH, h.Short(m), arg)
+	m.PushAction(h.Remove)
 }

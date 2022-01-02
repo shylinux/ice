@@ -41,7 +41,7 @@ func (d Data) Export(m *Message, arg ...interface{}) {
 	m.OptionFields(m.Config(kit.META_FIELD))
 	m.Cmdy(mdb.EXPORT, m.PrefixKey(), "", kit.Simple(arg))
 }
-func (d Data) Import(m *Message, arg ...string) {
+func (d Data) Import(m *Message, arg ...interface{}) {
 	m.Cmdy(mdb.IMPORT, m.PrefixKey(), "", kit.Simple(arg))
 }
 func (d Data) Next(m *Message, arg ...string) {

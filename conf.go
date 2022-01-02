@@ -12,6 +12,10 @@ const (
 
 	PWD = "./"
 
+	JS = "js"
+	GO = "go"
+	SH = "sh"
+
 	OK      = "ok"
 	TRUE    = "true"
 	FALSE   = "false"
@@ -23,6 +27,7 @@ const (
 	LOAD = "load"
 	AUTO = "auto"
 	HELP = "help"
+	HTTP = "http"
 	SAVE = "save"
 	EXIT = "exit"
 
@@ -65,8 +70,9 @@ const ( // REPOS
 	INTSHELL = "intshell"
 	CONTEXTS = "contexts"
 
-	REQUIRE = "require"
 	INSTALL = "install"
+	REQUIRE = "require"
+	DISPLAY = "display"
 	PUBLISH = "publish"
 	RELEASE = "release"
 )
@@ -86,6 +92,9 @@ const ( // DIR
 	USR_INSTALL  = "usr/install"
 	USR_PUBLISH  = "usr/publish"
 
+	PLUGIN_STORY = "/plugin/story"
+	PLUGIN_LOCAL = "/plugin/local"
+
 	FAVICON  = "favicon.ico"
 	PROTO_JS = "proto.js"
 	FRAME_JS = "frame.js"
@@ -95,6 +104,7 @@ const ( // DIR
 	INDEX_SH = "index.sh"
 
 	USR_LOCAL        = "usr/local"
+	USR_LOCAL_GO     = "usr/local/go"
 	USR_LOCAL_BIN    = "usr/local/bin"
 	USR_LOCAL_LIB    = "usr/local/lib"
 	USR_LOCAL_WORK   = "usr/local/work"
@@ -222,6 +232,7 @@ const ( // Err
 	ErrExists       = "exists: "
 	ErrExpire       = "expire: "
 	ErrTimeout      = "timeout: "
+	ErrFailure      = "failure: "
 	ErrNotLogin     = "not login: "
 	ErrNotFound     = "not found: "
 	ErrNotRight     = "not right: "
