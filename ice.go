@@ -41,7 +41,6 @@ func (m *Message) Cmdy(arg ...interface{}) *Message {
 	switch cmd := arg[0].(type) {
 	case string:
 	default:
-		m.Debug("what %v", arg)
 		return &Message{m.Message.Cmdy(kit.FileName(cmd), ctx.ACTION, strings.ToLower(kit.FuncName(cmd)), arg[1:])}
 	}
 	return &Message{m.Message.Cmdy(arg...)}
