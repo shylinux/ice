@@ -1,7 +1,6 @@
 package ice
 
 import (
-	"fmt"
 	"reflect"
 	"strings"
 
@@ -27,7 +26,7 @@ func val(m *ice.Message, arg ...string) []reflect.Value {
 	}
 	return args
 }
-func transMethod(config *ice.Config, command *ice.Command, obj interface{}) {
+func transMethod(obj interface{}, command *ice.Command, config *ice.Config) {
 	t, v := ref(obj)
 	for i := 0; i < v.NumMethod(); i++ {
 		method := v.Method(i)
@@ -56,12 +55,12 @@ func transMethod(config *ice.Config, command *ice.Command, obj interface{}) {
 	}
 }
 
-func transField(config *ice.Config, command *ice.Command, obj interface{}) {
+func transField(obj interface{}, command *ice.Command, config *ice.Config) {
 	t, v := ref(obj)
 	for i := 0; i < v.NumField(); i++ {
 		if t.Field(i).Type.Kind() == reflect.Struct {
 			if v.Field(i).CanInterface() {
-				transField(config, command, v.Field(i).Interface())
+				transField(v.Field(i).Interface(), command, config)
 			}
 		}
 	}
@@ -117,8 +116,8 @@ func Cmd(key string, obj interface{}) string {
 	if obj == nil {
 		return key
 	}
-	config := &ice.Config{Value: kit.Data()}
 	command := &ice.Command{Name: mdb.LIST, Help: "列表", Action: map[string]*ice.Action{}, Meta: kit.Dict()}
+	config := &ice.Config{Value: kit.Data()}
 
 	switch obj := obj.(type) {
 	case func(*Message, ...string):
@@ -127,12 +126,10 @@ func Cmd(key string, obj interface{}) string {
 		}
 	default:
 		t, _ := ref(obj)
-		p := kit.Keys(t.PkgPath(), t.String())
-		list[p] = key
-		fmt.Printf("%v %v %v\n", kit.FileLine(1, 3), p, key)
+		list[kit.Keys(t.PkgPath(), t.String())] = key
 
-		transMethod(config, command, obj)
-		transField(config, command, obj)
+		transMethod(obj, command, config)
+		transField(obj, command, config)
 	}
 	if strings.HasPrefix(command.Name, mdb.LIST) {
 		command.Name = strings.Replace(command.Name, mdb.LIST, kit.Slice(strings.Split(key, ice.PT), -1)[0], 1)

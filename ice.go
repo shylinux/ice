@@ -6,9 +6,7 @@ import (
 
 	ice "shylinux.com/x/icebergs"
 	_ "shylinux.com/x/icebergs/base"
-	"shylinux.com/x/icebergs/base/cli"
 	"shylinux.com/x/icebergs/base/ctx"
-	"shylinux.com/x/icebergs/base/tcp"
 	"shylinux.com/x/icebergs/base/web"
 	_ "shylinux.com/x/icebergs/core"
 	_ "shylinux.com/x/icebergs/misc"
@@ -17,40 +15,17 @@ import (
 
 type Message struct{ *ice.Message }
 
+func (m *Message) Spawn() *Message {
+	return &Message{m.Message.Spawn()}
+}
 func (m *Message) PushStream() *Message {
 	web.PushStream(m.Message)
 	return m
 }
-func (m *Message) Spawn() *Message {
-	return &Message{m.Message.Spawn()}
-}
-func (m *Message) HTTP(path string, hand interface{}) {
-	if path == "" {
-		path = m.CommandKey()
-	}
-	if !strings.HasPrefix(path, ice.PS) {
-		path = ice.PS + path
-	}
-	m.Target().Commands[path] = &ice.Command{Name: path, Help: "", Hand: func(m *ice.Message, c *ice.Context, cmd string, arg ...string) {
-		switch hand := hand.(type) {
-		case func(*Message, string, ...string):
-			hand(&Message{m}, cmd, arg...)
-		case func(*Message, ...string):
-			hand(&Message{m}, arg...)
-		case string:
-			m.Cmdy(kit.Select(m.CommandKey(), hand), arg)
-		}
-	}}
-}
-
 func trans(arg ...interface{}) []interface{} {
 	switch cmd := arg[0].(type) {
 	case string:
 	default:
-		if p, ok := cmd.(interface{ PrefixKey(arg ...string) string }); ok {
-			return append(kit.List(p.PrefixKey()), arg[1:]...)
-		}
-
 		switch t, v := ref(cmd); v.Kind() {
 		case reflect.Struct:
 			return append(kit.List(kit.Select(t.String(), list[kit.Keys(t.PkgPath(), t.String())])), arg[1:]...)
@@ -59,7 +34,6 @@ func trans(arg ...interface{}) []interface{} {
 		}
 	}
 	return arg
-
 }
 func (m *Message) Cmd(arg ...interface{}) *Message {
 	return &Message{m.Message.Cmd(trans(arg...)...)}
@@ -71,12 +45,21 @@ func (m *Message) Cmdy(arg ...interface{}) *Message {
 	return &Message{m.Message.Cmdy(trans(arg...)...)}
 }
 
-func Run(arg ...string) string {
-	ice.Pulse.Set(ice.MSG_DETAIL)
-	ice.Pulse.Set(ice.MSG_APPEND)
-	ice.Pulse.Set(ice.MSG_RESULT)
-	return ice.Run(arg...)
-}
-func RunServe(port string, arg ...string) string {
-	return ice.Run(kit.Simple(web.SERVE, cli.START, ice.DEV, "", tcp.PORT, port, arg)...)
+func (m *Message) HTTP(path string, hand interface{}) {
+	if path == "" {
+		path = m.CommandKey()
+	}
+	if !strings.HasPrefix(path, ice.PS) {
+		path = ice.PS + path
+	}
+	m.Target().Commands[path] = &ice.Command{Name: path, Help: path, Hand: func(m *ice.Message, c *ice.Context, cmd string, arg ...string) {
+		switch hand := hand.(type) {
+		case func(*Message, string, ...string):
+			hand(&Message{m}, cmd, arg...)
+		case func(*Message, ...string):
+			hand(&Message{m}, arg...)
+		case string:
+			m.Cmdy(kit.Select(m.CommandKey(), hand), arg)
+		}
+	}}
 }

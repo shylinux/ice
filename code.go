@@ -17,6 +17,7 @@ type Code struct {
 	serve    string `name:"serve" help:"服务"`
 	inputs   string `name:"inputs" help:"补全"`
 	download string `name:"download" help:"下载"`
+	install  string `name:"install" help:"安装"`
 	build    string `name:"build" help:"构建"`
 	order    string `name:"order" help:"定制"`
 	start    string `name:"start" help:"启动"`
@@ -65,7 +66,7 @@ func (c Code) System(m *Message, dir string, arg ...string) {
 	m.Cmdy(cli.SYSTEM, arg)
 }
 func (c Code) Stream(m *Message, dir string, arg ...string) {
-	web.PushStream(m.Message)
+	m.PushStream()
 	c.System(m, dir, arg...)
 	m.ProcessHold()
 	m.StatusTime()
@@ -92,14 +93,8 @@ func getModCmd(p string, n int, obj interface{}) string {
 		return kit.Keys(p, modName(kit.ModName(n+1)), kit.FileName(n+1))
 	}
 }
-func getCodeModCmd(obj interface{}) string {
-	return getModCmd("web.code", 3, obj)
-}
-func GetCodeModCmd(obj interface{}) string {
-	return getCodeModCmd(obj)
-}
 func CodeModCmd(obj interface{}) string {
-	return Cmd(getCodeModCmd(obj), obj)
+	return Cmd(getModCmd("web.code", 2, obj), obj)
 }
 
 func ctxName(str string) string {
@@ -112,6 +107,9 @@ func ctxName(str string) string {
 	if ls[0] == ice.SRC {
 		ls = kit.Slice(ls, 1)
 	}
+	if ls[0] == ice.MISC {
+		ls = kit.Slice(ls, 1)
+	}
 	return strings.Join(ls, ice.PT)
 }
 func getCtxCmd(p string, n int, obj interface{}) string {
@@ -122,12 +120,6 @@ func getCtxCmd(p string, n int, obj interface{}) string {
 		return kit.Keys(p, kit.PathName(n+1), kit.FileName(n+1))
 	}
 }
-func getCodeCtxCmd(obj interface{}) string {
-	return getCtxCmd("web.code", 3, obj)
-}
-func GetCodeCtxCmd(obj interface{}) string {
-	return getCodeCtxCmd(obj)
-}
 func CodeCtxCmd(obj interface{}) string {
-	return Cmd(getCodeCtxCmd(obj), obj)
+	return Cmd(getCtxCmd("web.code", 2, obj), obj)
 }

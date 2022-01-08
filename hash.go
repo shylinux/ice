@@ -17,14 +17,14 @@ type Hash struct {
 }
 
 func (h Hash) Short(m *Message) string {
-	return kit.Select(kit.MDB_HASH, h.Data.Short(m))
+	return kit.Select(mdb.HASH, h.Data.Short(m))
 }
 
-func (h Hash) Inputs(m *Message, arg ...string) {
-	h.Data.Inputs(m, mdb.HASH, arg)
-}
 func (h Hash) Prunes(m *Message, arg ...string) {
 	h.Data.Prunes(m, mdb.HASH, arg)
+}
+func (h Hash) Inputs(m *Message, arg ...string) {
+	h.Data.Inputs(m, mdb.HASH, arg)
 }
 func (h Hash) Create(m *Message, arg ...string) *Message {
 	h.Data.Insert(m, mdb.HASH, arg)

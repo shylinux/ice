@@ -15,8 +15,8 @@ type Data struct {
 	prev    string `name:"prev" help:"上一页"`
 }
 
-func (d Data) Short(m *Message) string { return m.Config(kit.MDB_SHORT) }
-func (d Data) Field(m *Message) string { return m.Config(kit.MDB_FIELD) }
+func (d Data) Short(m *Message) string { return m.Config(mdb.SHORT) }
+func (d Data) Field(m *Message) string { return m.Config(mdb.FIELD) }
 
 func (d Data) Insert(m *Message, arg ...interface{}) {
 	m.Cmdy(mdb.INSERT, m.PrefixKey(), "", kit.Simple(arg))
