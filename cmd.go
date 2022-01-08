@@ -1,6 +1,7 @@
 package ice
 
 import (
+	"fmt"
 	"reflect"
 	"strings"
 
@@ -30,6 +31,7 @@ func transMethod(config *ice.Config, command *ice.Command, obj interface{}) {
 	t, v := ref(obj)
 	for i := 0; i < v.NumMethod(); i++ {
 		method := v.Method(i)
+
 		var h func(*ice.Message, ...string)
 		switch method.Interface().(type) {
 		case func(*Message, ...string) *Message:
@@ -69,12 +71,12 @@ func transField(config *ice.Config, command *ice.Command, obj interface{}) {
 		key, tag := t.Field(i).Name, t.Field(i).Tag
 		switch key {
 		case "display":
-			for k, v := range ice.DisplayRequire(3, tag.Get("data")) {
+			for k, v := range ice.DisplayRequire(3, tag.Get(mdb.DATA)) {
 				command.Meta[k] = v
 			}
 			continue
 		}
-		if data := tag.Get("data"); data != "" {
+		if data := tag.Get(mdb.DATA); data != "" {
 			kit.Value(meta, key, data)
 		}
 
@@ -90,7 +92,7 @@ func transField(config *ice.Config, command *ice.Command, obj interface{}) {
 			action.Name, action.Help = name, help
 		}
 
-		h := tag.Get("http")
+		h := tag.Get(ice.HTTP)
 		if h == "" {
 			continue
 		}
@@ -108,9 +110,12 @@ func transField(config *ice.Config, command *ice.Command, obj interface{}) {
 		}}
 	}
 }
-func Cmd(key string, obj interface{}) {
+
+var list = map[string]string{}
+
+func Cmd(key string, obj interface{}) string {
 	if obj == nil {
-		return
+		return key
 	}
 	config := &ice.Config{Value: kit.Data()}
 	command := &ice.Command{Name: mdb.LIST, Help: "列表", Action: map[string]*ice.Action{}, Meta: kit.Dict()}
@@ -121,11 +126,16 @@ func Cmd(key string, obj interface{}) {
 			obj(&Message{m}, arg...)
 		}
 	default:
+		t, _ := ref(obj)
+		p := kit.Keys(t.PkgPath(), t.String())
+		list[p] = key
+		fmt.Printf("%v %v %v\n", kit.FileLine(1, 3), p, key)
+
 		transMethod(config, command, obj)
 		transField(config, command, obj)
 	}
 	if strings.HasPrefix(command.Name, mdb.LIST) {
-		command.Name = strings.Replace(command.Name, mdb.LIST, kit.Slice(strings.Split(key, "."), -1)[0], 1)
+		command.Name = strings.Replace(command.Name, mdb.LIST, kit.Slice(strings.Split(key, ice.PT), -1)[0], 1)
 	}
 
 	last := ice.Index
@@ -158,4 +168,5 @@ func Cmd(key string, obj interface{}) {
 			list[i]: command,
 		}, Configs: map[string]*ice.Config{list[i]: config}})
 	}
+	return key
 }

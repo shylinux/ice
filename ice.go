@@ -1,6 +1,7 @@
 package ice
 
 import (
+	"reflect"
 	"strings"
 
 	ice "shylinux.com/x/icebergs"
@@ -16,6 +17,10 @@ import (
 
 type Message struct{ *ice.Message }
 
+func (m *Message) PushStream() *Message {
+	web.PushStream(m.Message)
+	return m
+}
 func (m *Message) Spawn() *Message {
 	return &Message{m.Message.Spawn()}
 }
@@ -37,13 +42,33 @@ func (m *Message) HTTP(path string, hand interface{}) {
 		}
 	}}
 }
-func (m *Message) Cmdy(arg ...interface{}) *Message {
+
+func trans(arg ...interface{}) []interface{} {
 	switch cmd := arg[0].(type) {
 	case string:
 	default:
-		return &Message{m.Message.Cmdy(kit.FileName(cmd), ctx.ACTION, strings.ToLower(kit.FuncName(cmd)), arg[1:])}
+		if p, ok := cmd.(interface{ PrefixKey(arg ...string) string }); ok {
+			return append(kit.List(p.PrefixKey()), arg[1:]...)
+		}
+
+		switch t, v := ref(cmd); v.Kind() {
+		case reflect.Struct:
+			return append(kit.List(kit.Select(t.String(), list[kit.Keys(t.PkgPath(), t.String())])), arg[1:]...)
+		default:
+			return append(kit.List(kit.FileName(cmd), ctx.ACTION, strings.ToLower(kit.FuncName(cmd))), arg[1:]...)
+		}
 	}
-	return &Message{m.Message.Cmdy(arg...)}
+	return arg
+
+}
+func (m *Message) Cmd(arg ...interface{}) *Message {
+	return &Message{m.Message.Cmd(trans(arg...)...)}
+}
+func (m *Message) Cmdx(arg ...interface{}) string {
+	return m.Message.Cmdx(trans(arg...)...)
+}
+func (m *Message) Cmdy(arg ...interface{}) *Message {
+	return &Message{m.Message.Cmdy(trans(arg...)...)}
 }
 
 func Run(arg ...string) string {

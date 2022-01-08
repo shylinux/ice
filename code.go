@@ -2,6 +2,7 @@ package ice
 
 import (
 	"path"
+	"reflect"
 	"strings"
 
 	ice "shylinux.com/x/icebergs"
@@ -13,12 +14,14 @@ import (
 )
 
 type Code struct {
+	serve    string `name:"serve" help:"服务"`
 	inputs   string `name:"inputs" help:"补全"`
 	download string `name:"download" help:"下载"`
 	build    string `name:"build" help:"构建"`
 	order    string `name:"order" help:"定制"`
 	start    string `name:"start" help:"启动"`
 	stop     string `name:"stop" help:"停止"`
+	deploy   string `name:"deploy" help:"部署"`
 	list     string `name:"list port path auto start order build download" help:"源码"`
 }
 
@@ -43,7 +46,7 @@ func (c Code) Build(m *Message, src string, arg ...string) {
 	m.Cmdy(code.INSTALL, cli.BUILD, src, arg)
 }
 func (c Code) Order(m *Message, src, dir string, arg ...string) {
-	m.Cmd(nfs.PUSH, ice.ETC_PATH, kit.Path(m.Conf(code.INSTALL, kit.Keym(nfs.PATH)), kit.TrimExt(src), dir+"\n"))
+	m.Cmd(nfs.PUSH, ice.ETC_PATH, kit.Path(m.Conf(code.INSTALL, kit.Keym(nfs.PATH)), kit.TrimExt(src), dir+ice.NL))
 	m.Cmdy(nfs.CAT, ice.ETC_PATH)
 }
 func (c Code) Start(m *Message, src string, arg ...string) {
@@ -68,9 +71,63 @@ func (c Code) Stream(m *Message, dir string, arg ...string) {
 	m.StatusTime()
 }
 
-func WikiCmd(obj interface{})    { Cmd(kit.Keys("web.wiki", kit.FileName(2)), obj) }
-func CodeCmd(obj interface{})    { Cmd(kit.Keys("web.code", kit.FileName(2)), obj) }
-func CodeCtxCmd(obj interface{}) { Cmd(kit.Keys("web.code", kit.PathName(2), kit.FileName(2)), obj) }
-func CodeModCmd(obj interface{}) {
-	Cmd(kit.Keys("web.code", strings.TrimSuffix(kit.ModName(2), "-story"), kit.FileName(2)), obj)
+func CodeCmd(obj interface{}) string { return Cmd(kit.Keys("web.code", kit.FileName(2)), obj) }
+
+func modName(str string) string {
+	ls := strings.Split(str, ice.PS)
+	mod := ls[0]
+	if strings.Contains(ls[0], ice.PT) {
+		mod = kit.Select(mod, ls, 2)
+	}
+	if strings.HasPrefix(mod, "20") {
+		mod = kit.Select(mod, strings.Split(mod, "-"), 1)
+	}
+	return strings.TrimSuffix(mod, "-story")
+}
+func getModCmd(p string, n int, obj interface{}) string {
+	switch t, v := ref(obj); v.Kind() {
+	case reflect.Struct:
+		return kit.Keys(p, modName(t.PkgPath()), strings.ToLower(kit.Slice(kit.Split(t.String(), ice.PT), -1)[0]))
+	default:
+		return kit.Keys(p, modName(kit.ModName(n+1)), kit.FileName(n+1))
+	}
+}
+func getCodeModCmd(obj interface{}) string {
+	return getModCmd("web.code", 3, obj)
+}
+func GetCodeModCmd(obj interface{}) string {
+	return getCodeModCmd(obj)
+}
+func CodeModCmd(obj interface{}) string {
+	return Cmd(getCodeModCmd(obj), obj)
+}
+
+func ctxName(str string) string {
+	ls := strings.Split(str, ice.PS)
+	if strings.Contains(ls[0], ice.PT) {
+		ls = kit.Slice(ls, 3)
+	} else {
+		ls = kit.Slice(ls, 1)
+	}
+	if ls[0] == ice.SRC {
+		ls = kit.Slice(ls, 1)
+	}
+	return strings.Join(ls, ice.PT)
+}
+func getCtxCmd(p string, n int, obj interface{}) string {
+	switch t, v := ref(obj); v.Kind() {
+	case reflect.Struct:
+		return kit.Keys(p, ctxName(t.PkgPath()), strings.ToLower(kit.Slice(kit.Split(t.String(), ice.PT), -1)[0]))
+	default:
+		return kit.Keys(p, kit.PathName(n+1), kit.FileName(n+1))
+	}
+}
+func getCodeCtxCmd(obj interface{}) string {
+	return getCtxCmd("web.code", 3, obj)
+}
+func GetCodeCtxCmd(obj interface{}) string {
+	return getCodeCtxCmd(obj)
+}
+func CodeCtxCmd(obj interface{}) string {
+	return Cmd(getCodeCtxCmd(obj), obj)
 }
