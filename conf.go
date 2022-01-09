@@ -20,6 +20,8 @@ const (
 	INIT = "init"
 	LOAD = "load"
 	AUTO = "auto"
+	SHOW = "show"
+	PLAY = "play"
 	HELP = "help"
 	HTTP = "http"
 	SAVE = "save"
