@@ -28,7 +28,7 @@ func trans(arg ...interface{}) []interface{} {
 	default:
 		switch t, v := ref(cmd); v.Kind() {
 		case reflect.Struct:
-			return append(kit.List(kit.Select(t.String(), list[kit.Keys(t.PkgPath(), t.String())])), arg[1:]...)
+			return append(kit.List(kit.Select(t.String(), listKey(t))), arg[1:]...)
 		default:
 			return append(kit.List(kit.FileName(cmd), ctx.ACTION, strings.ToLower(kit.FuncName(cmd))), arg[1:]...)
 		}

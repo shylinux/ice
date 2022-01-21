@@ -112,7 +112,16 @@ func transField(obj interface{}, command *ice.Command, config *ice.Config) {
 
 var list = map[string]string{}
 
-func Cmd(key string, obj interface{}) string {
+func listKey(t reflect.Type, arg ...string) string {
+	if len(arg) == 0 {
+		return list[kit.Keys(t.PkgPath(), t.String())]
+	}
+	list[kit.Keys(t.PkgPath(), t.String())] = arg[0]
+	return arg[0]
+}
+
+func Cmd(key string, obj interface{}) string { return cmd(key, obj) }
+func cmd(key string, obj interface{}) string {
 	if obj == nil {
 		return key
 	}
@@ -126,7 +135,10 @@ func Cmd(key string, obj interface{}) string {
 		}
 	default:
 		t, _ := ref(obj)
-		list[kit.Keys(t.PkgPath(), t.String())] = key
+		listKey(t, key)
+		p := kit.FileLine(3, 100)
+		i := strings.LastIndex(p, "/src/")
+		ice.Info.File[strings.Split(p[i+1:], ":")[0]] = key
 
 		transMethod(obj, command, config)
 		transField(obj, command, config)
