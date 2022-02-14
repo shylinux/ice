@@ -1,7 +1,7 @@
 shylinux.com/x/go-qrcode v0.0.1 h1:/eOGqMj1qtgs9Ymd12zTUa1gcJZs9S92kj2lb0QzKsE=
 shylinux.com/x/go-qrcode v0.0.1/go.mod h1:KAbtU+KwiiABMZ/CJ0zh9PI2AX82Uf9rRYcQ4ODm4po=
-shylinux.com/x/icebergs v0.9.5 h1:YUPPRNQl3nCTbkpNqJSdFoZOgBQ1Tuda//jUoRDeckI=
-shylinux.com/x/icebergs v0.9.5/go.mod h1:UmlnuYttB+5Lw0gnzMhyWP3Yp5ngwQ1zrlyKQxOxLqM=
+shylinux.com/x/icebergs v0.9.6 h1:rr1Yy36gbODvNHNIMTCBN4yTGFyAHVtmut8ntbPYXfs=
+shylinux.com/x/icebergs v0.9.6/go.mod h1:UmlnuYttB+5Lw0gnzMhyWP3Yp5ngwQ1zrlyKQxOxLqM=
 shylinux.com/x/toolkits v0.4.9 h1:1RQR+XQQ5x2Jwga9LxGjOyrQ0AdzDhRIvdNSFbxfVBA=
 shylinux.com/x/toolkits v0.4.9/go.mod h1:8LbYHe7oxBIqb6s4MSOD+4d28QvPdvkyCVtwB/JW7AA=
 shylinux.com/x/websocket v0.0.1 h1:OBc21DxqsGlQ2+Pz76xqLyDNo1LV+PUUqfWi+1PZPDE=
