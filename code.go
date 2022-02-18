@@ -56,6 +56,9 @@ func (c Code) Start(m *Message, src string, arg ...string) {
 func (c Code) List(m *Message, src string, arg ...string) {
 	m.Cmdy(code.INSTALL, src, arg)
 }
+func (c Code) Trash(m *Message, src string, arg ...string) {
+	m.Cmdy(code.INSTALL, nfs.TRASH)
+}
 
 func (c Code) Daemon(m *Message, dir string, arg ...string) {
 	m.Option(cli.CMD_DIR, dir)
