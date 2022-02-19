@@ -138,7 +138,7 @@ func cmd(key string, obj interface{}) string {
 		listKey(t, key)
 		p := kit.FileLine(3, 100)
 		i := strings.LastIndex(p, "/src/")
-		ice.Info.File[strings.Split(p[i+1:], ":")[0]] = key
+		ice.AddFileKey(strings.Split(p[i+1:], ":")[0], key)
 
 		transMethod(obj, command, config)
 		transField(obj, command, config)
