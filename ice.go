@@ -6,8 +6,8 @@ import (
 
 	ice "shylinux.com/x/icebergs"
 	_ "shylinux.com/x/icebergs/base"
+	"shylinux.com/x/icebergs/base/cli"
 	"shylinux.com/x/icebergs/base/ctx"
-	"shylinux.com/x/icebergs/base/web"
 	_ "shylinux.com/x/icebergs/core"
 	_ "shylinux.com/x/icebergs/misc"
 	kit "shylinux.com/x/toolkits"
@@ -19,7 +19,7 @@ func (m *Message) Spawn() *Message {
 	return &Message{m.Message.Spawn()}
 }
 func (m *Message) PushStream() *Message {
-	web.PushStream(m.Message)
+	cli.PushStream(m.Message)
 	return m
 }
 func trans(arg ...interface{}) []interface{} {
