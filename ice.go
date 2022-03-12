@@ -23,12 +23,23 @@ func (m *Message) PushStream() *Message {
 	return m
 }
 func trans(arg ...interface{}) []interface{} {
+	if len(arg) > 1 {
+		switch action := arg[1].(type) {
+		case string:
+		default:
+			switch _, v := ref(action); v.Kind() {
+			case reflect.Func:
+				arg[1] = strings.ToLower(kit.FuncName(action))
+			}
+		}
+	}
+
 	switch cmd := arg[0].(type) {
 	case string:
 	default:
 		switch t, v := ref(cmd); v.Kind() {
 		case reflect.Struct:
-			return append(kit.List(kit.Select(t.String(), listKey(t))), arg[1:]...)
+			arg[0] = kit.Select(t.String(), listKey(t))
 		default:
 			return append(kit.List(kit.FileName(cmd), ctx.ACTION, strings.ToLower(kit.FuncName(cmd))), arg[1:]...)
 		}
