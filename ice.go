@@ -18,9 +18,13 @@ type Message struct{ *ice.Message }
 func (m *Message) Spawn() *Message {
 	return &Message{m.Message.Spawn()}
 }
-func (m *Message) PushStream() *Message {
+func (m *Message) PushStream() func() *Message {
 	cli.PushStream(m.Message)
-	return m
+	return func() *Message {
+		m.StatusTimeCount()
+		m.ProcessHold()
+		return m
+	}
 }
 func trans(arg ...interface{}) []interface{} {
 	if len(arg) > 1 {

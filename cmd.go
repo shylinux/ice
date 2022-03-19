@@ -112,6 +112,14 @@ func transField(obj interface{}, command *ice.Command, config *ice.Config) {
 
 var list = map[string]string{}
 
+func GetTypeKey(obj interface{}) string {
+	switch t, v := ref(obj); v.Kind() {
+	case reflect.Struct:
+		return kit.Select(t.String(), listKey(t))
+	default:
+		return ""
+	}
+}
 func listKey(t reflect.Type, arg ...string) string {
 	if len(arg) == 0 {
 		return list[kit.Keys(t.PkgPath(), t.String())]
