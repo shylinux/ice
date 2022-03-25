@@ -34,11 +34,15 @@ func (d Data) Inputs(m *Message, arg ...interface{}) {
 	m.Cmdy(mdb.INPUTS, m.PrefixKey(), "", kit.Simple(arg))
 }
 func (d Data) Prunes(m *Message, arg ...interface{}) {
-	m.OptionFields(m.Config(mdb.FIELD))
+	if m.OptionFields() == "" {
+		m.OptionFields(m.Config(mdb.FIELD))
+	}
 	m.Cmdy(mdb.PRUNES, m.PrefixKey(), "", kit.Simple(arg))
 }
 func (d Data) Export(m *Message, arg ...interface{}) {
-	m.OptionFields(m.Config(mdb.FIELD))
+	if m.OptionFields() == "" {
+		m.OptionFields(m.Config(mdb.FIELD))
+	}
 	m.Cmdy(mdb.EXPORT, m.PrefixKey(), "", kit.Simple(arg))
 }
 func (d Data) Import(m *Message, arg ...interface{}) {

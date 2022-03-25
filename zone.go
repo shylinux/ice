@@ -37,10 +37,13 @@ func (z Zone) Modify(m *Message, arg ...string) {
 	z.Data.Modify(m, mdb.ZONE, m.Option(z.Short(m)), m.Option(mdb.ID), arg)
 }
 func (z Zone) Export(m *Message, arg ...string) {
-	z.Data.Export(m, mdb.ZONE, arg)
+	if m.OptionFields() == "" {
+		m.OptionFields(m.Config(mdb.SHORT), m.Config(mdb.FIELD))
+	}
+	z.Data.Export(m, mdb.ZONE)
 }
 func (z Zone) Import(m *Message, arg ...string) {
-	z.Data.Import(m, mdb.ZONE, arg)
+	z.Data.Import(m, mdb.ZONE)
 }
 func (z Zone) List(m *Message, arg ...string) *Message {
 	m.Fields(len(arg), kit.Join([]string{mdb.TIME, z.Short(m), mdb.COUNT}), z.Field(m))
