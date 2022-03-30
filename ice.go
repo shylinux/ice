@@ -50,6 +50,9 @@ func trans(arg ...interface{}) []interface{} {
 	}
 	return arg
 }
+func (m *Message) Conf(arg ...interface{}) string {
+	return m.Message.Conf(trans(arg...)...)
+}
 func (m *Message) Cmd(arg ...interface{}) *Message {
 	return &Message{m.Message.Cmd(trans(arg...)...)}
 }

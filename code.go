@@ -75,7 +75,9 @@ func (c Code) Stream(m *Message, dir string, arg ...string) {
 	m.StatusTime()
 }
 
-func CodeCmd(obj interface{}) string { return cmd(kit.Keys("web.code", kit.FileName(2)), obj) }
+func CodeCmd(obj interface{}, arg ...interface{}) string {
+	return cmd(kit.Keys("web.code", kit.FileName(2)), obj, arg...)
+}
 
 func modName(str string) string {
 	ls := strings.Split(str, ice.PS)
@@ -96,8 +98,8 @@ func getModCmd(p string, n int, obj interface{}) string {
 		return kit.Keys(p, modName(kit.ModName(n+1)), kit.FileName(n+1))
 	}
 }
-func CodeModCmd(obj interface{}) string {
-	return cmd(getModCmd("web.code", 2, obj), obj)
+func CodeModCmd(obj interface{}, arg ...interface{}) string {
+	return cmd(getModCmd("web.code", 2, obj), obj, arg...)
 }
 
 func ctxName(str string) string {
@@ -123,6 +125,6 @@ func getCtxCmd(p string, n int, obj interface{}) string {
 		return kit.Keys(p, kit.PathName(n+1), kit.FileName(n+1))
 	}
 }
-func CodeCtxCmd(obj interface{}) string {
-	return cmd(getCtxCmd("web.code", 2, obj), obj)
+func CodeCtxCmd(obj interface{}, arg ...interface{}) string {
+	return cmd(getCtxCmd("web.code", 2, obj), obj, arg...)
 }

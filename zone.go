@@ -1,6 +1,7 @@
 package ice
 
 import (
+	ice "shylinux.com/x/icebergs"
 	"shylinux.com/x/icebergs/base/mdb"
 	kit "shylinux.com/x/toolkits"
 )
@@ -40,10 +41,17 @@ func (z Zone) Export(m *Message, arg ...string) {
 	if m.OptionFields() == "" {
 		m.OptionFields(m.Config(mdb.SHORT), m.Config(mdb.FIELD))
 	}
+	m.Option(ice.CACHE_LIMIT, "-1")
 	z.Data.Export(m, mdb.ZONE)
 }
 func (z Zone) Import(m *Message, arg ...string) {
 	z.Data.Import(m, mdb.ZONE)
+}
+func (z Zone) Prev(m *Message, arg ...string) {
+	mdb.PrevPage(m.Message, arg[0], arg[1:]...)
+}
+func (z Zone) Next(m *Message, arg ...string) {
+	mdb.NextPageLimit(m.Message, arg[0], arg[1:]...)
 }
 func (z Zone) List(m *Message, arg ...string) *Message {
 	m.Fields(len(arg), kit.Join([]string{mdb.TIME, z.Short(m), mdb.COUNT}), z.Field(m))

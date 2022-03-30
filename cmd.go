@@ -128,13 +128,13 @@ func listKey(t reflect.Type, arg ...string) string {
 	return arg[0]
 }
 
-func Cmd(key string, obj interface{}) string { return cmd(key, obj) }
-func cmd(key string, obj interface{}) string {
+func Cmd(key string, obj interface{}, arg ...interface{}) string { return cmd(key, obj, arg...) }
+func cmd(key string, obj interface{}, arg ...interface{}) string {
 	if obj == nil {
 		return key
 	}
 	command := &ice.Command{Name: mdb.LIST, Help: "列表", Action: map[string]*ice.Action{}, Meta: kit.Dict()}
-	config := &ice.Config{Value: kit.Data()}
+	config := &ice.Config{Value: kit.Data(arg...)}
 
 	switch obj := obj.(type) {
 	case func(*Message, ...string):
