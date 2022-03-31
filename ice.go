@@ -8,6 +8,7 @@ import (
 	_ "shylinux.com/x/icebergs/base"
 	"shylinux.com/x/icebergs/base/cli"
 	"shylinux.com/x/icebergs/base/ctx"
+	"shylinux.com/x/icebergs/base/web"
 	_ "shylinux.com/x/icebergs/core"
 	_ "shylinux.com/x/icebergs/misc"
 	kit "shylinux.com/x/toolkits"
@@ -69,6 +70,10 @@ func (m *Message) HTTP(path string, hand interface{}) {
 	}
 	if !strings.HasPrefix(path, ice.PS) {
 		path = ice.PS + path
+	}
+	if m.Target().Commands[web.WEB_LOGIN] == nil {
+		m.Target().Commands[web.WEB_LOGIN] = &ice.Command{Hand: func(m *ice.Message, c *ice.Context, cmd string, arg ...string) {
+		}}
 	}
 	m.Target().Commands[path] = &ice.Command{Name: path, Help: path, Hand: func(m *ice.Message, c *ice.Context, cmd string, arg ...string) {
 		switch hand := hand.(type) {

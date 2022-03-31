@@ -91,8 +91,8 @@ func transField(obj interface{}, command *ice.Command, config *ice.Config) {
 			action.Name, action.Help = name, help
 		}
 
-		h := tag.Get(ice.HTTP)
-		if h == "" {
+		h, ok := tag.Lookup(ice.HTTP)
+		if !ok {
 			continue
 		}
 
@@ -105,7 +105,7 @@ func transField(obj interface{}, command *ice.Command, config *ice.Config) {
 			if last != nil && last.Hand != nil {
 				last.Hand(m, arg...)
 			}
-			(&Message{m}).HTTP(h, hand)
+			(&Message{m}).HTTP(kit.Select(m.CommandKey(), h), hand)
 		}}
 	}
 }
