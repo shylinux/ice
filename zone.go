@@ -57,6 +57,7 @@ func (z Zone) List(m *Message, arg ...string) *Message {
 	m.Fields(len(arg), kit.Join([]string{mdb.TIME, z.Short(m), mdb.COUNT}), z.Field(m))
 	if z.Data.Select(m, mdb.ZONE, arg); len(arg) == 0 {
 		m.PushAction(z.Remove)
+		m.StatusTimeCount()
 	} else {
 		m.Richs(m.PrefixKey(), "", arg[0], func(key string, value map[string]interface{}) {
 			m.StatusTimeCountTotal(kit.Value(value, kit.Keym(mdb.COUNT)))
