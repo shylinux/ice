@@ -86,3 +86,5 @@ func (m *Message) HTTP(path string, hand interface{}) {
 		}
 	}}
 }
+
+var Pulse = ice.Pulse
