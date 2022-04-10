@@ -145,7 +145,7 @@ func cmd(key string, obj interface{}, arg ...interface{}) string {
 		t, _ := ref(obj)
 		listKey(t, key)
 		p := kit.FileLine(3, 100)
-		ice.AddFileKey(p, key)
+		ice.AddFileCmd(p, key)
 
 		transMethod(obj, command, config)
 		transField(obj, command, config)
