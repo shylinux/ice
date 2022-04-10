@@ -170,19 +170,10 @@ func cmd(key string, obj interface{}, arg ...interface{}) string {
 			continue
 		}
 
-		last.Merge(&ice.Context{Commands: map[string]*ice.Command{
-			ice.CTX_INIT: {Hand: func(m *ice.Message, c *ice.Context, cmd string, arg ...string) {
-				if action, ok := command.Action[ice.INIT]; ok {
-					action.Hand(m.Spawn(kit.Ext(key)), arg...)
-				}
-			}},
-			ice.CTX_EXIT: {Hand: func(m *ice.Message, c *ice.Context, cmd string, arg ...string) {
-				if action, ok := command.Action[ice.EXIT]; ok {
-					action.Hand(m.Spawn(kit.Ext(key)), arg...)
-				}
-			}},
-			list[i]: command,
-		}, Configs: map[string]*ice.Config{list[i]: config}})
+		last.Merge(&ice.Context{
+			Commands: map[string]*ice.Command{list[i]: command},
+			Configs:  map[string]*ice.Config{list[i]: config},
+		})
 	}
 	return key
 }
