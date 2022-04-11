@@ -46,6 +46,12 @@ func transMethod(obj interface{}, command *ice.Command, config *ice.Config) {
 		if key := strings.ToLower(t.Method(i).Name); key == mdb.LIST {
 			command.Hand = func(m *ice.Message, c *ice.Context, cmd string, arg ...string) { h(m, arg...) }
 		} else {
+			if key == ice.INIT {
+				key = ice.CTX_INIT
+			}
+			if key == ice.EXIT {
+				key = ice.CTX_EXIT
+			}
 			if action, ok := command.Action[key]; !ok {
 				command.Action[key] = &ice.Action{Hand: h}
 			} else {
