@@ -48,3 +48,5 @@ func (h Hash) List(m *Message, arg ...string) *Message {
 	m.PushAction(h.Remove)
 	return m
 }
+func (h Hash) Prev(m *Message, arg ...string) { mdb.PrevPageLimit(m.Message, arg[0], arg[1:]...) }
+func (h Hash) Next(m *Message, arg ...string) { mdb.NextPage(m.Message, arg[0], arg[1:]...) }

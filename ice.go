@@ -16,8 +16,8 @@ import (
 
 type Message struct{ *ice.Message }
 
-func (m *Message) Spawn() *Message {
-	return &Message{m.Message.Spawn()}
+func (m *Message) Spawn(arg ...interface{}) *Message {
+	return &Message{m.Message.Spawn(arg...)}
 }
 func (m *Message) PushStream() func() *Message {
 	cli.PushStream(m.Message)
@@ -26,6 +26,17 @@ func (m *Message) PushStream() func() *Message {
 		m.ProcessHold()
 		return m
 	}
+}
+func Name(arg ...interface{}) string {
+	switch cmd := arg[0].(type) {
+	case string:
+	default:
+		switch t, v := ref(cmd); v.Kind() {
+		case reflect.Struct:
+			return kit.Slice(kit.Split(kit.Select(t.String(), listKey(t)), "."), -1)[0]
+		}
+	}
+	return ""
 }
 func trans(arg ...interface{}) []interface{} {
 	if len(arg) > 1 {
