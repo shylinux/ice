@@ -49,10 +49,10 @@ func (d Data) Import(m *Message, arg ...interface{}) {
 	m.Cmdy(mdb.IMPORT, m.PrefixKey(), "", kit.Simple(arg))
 }
 func (d Data) Next(m *Message, arg ...string) {
-	mdb.NextPage(m.Message, arg[0], arg[1:]...)
+	mdb.NextPage(m.Message, kit.Select("0", arg, 0), kit.Slice(arg, 1)...)
 }
 func (d Data) Prev(m *Message, arg ...string) {
-	mdb.PrevPage(m.Message, arg[0], arg[1:]...)
+	mdb.PrevPage(m.Message, kit.Select("0", arg, 0), kit.Slice(arg, 1)...)
 }
 func (d Data) List(m *Message, arg ...string) {
 	m.Echo("hello world")
