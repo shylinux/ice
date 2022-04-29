@@ -42,6 +42,7 @@ func trans(arg ...interface{}) []interface{} {
 	if len(arg) > 1 {
 		switch action := arg[1].(type) {
 		case string:
+		case []string:
 		default:
 			switch _, v := ref(action); v.Kind() {
 			case reflect.Func:
@@ -52,6 +53,7 @@ func trans(arg ...interface{}) []interface{} {
 
 	switch cmd := arg[0].(type) {
 	case string:
+	case []string:
 	default:
 		switch t, v := ref(cmd); v.Kind() {
 		case reflect.Struct:
