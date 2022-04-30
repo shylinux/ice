@@ -9,6 +9,6 @@ import (
 type Rest struct {
 }
 
-func (r Rest) Get(m *Message, url string, arg ...string) interface{} {
+func (r Rest) Get(m *Message, url string, arg ...interface{}) interface{} {
 	return kit.UnMarshal(m.Cmdx(web.SPIDE, ice.DEV, web.SPIDE_RAW, web.SPIDE_GET, url, arg))
 }
