@@ -150,8 +150,7 @@ func cmd(key string, obj interface{}, arg ...interface{}) string {
 	default:
 		t, _ := ref(obj)
 		listKey(t, key)
-		p := kit.FileLine(3, 100)
-		ice.AddFileCmd(p, key)
+		ice.AddFileCmd(ice.FileRequire(4), key)
 
 		transMethod(obj, command, config)
 		transField(obj, command, config)
