@@ -43,7 +43,7 @@ func transMethod(obj interface{}, command *ice.Command, config *ice.Config) {
 			continue
 		}
 
-		if key := strings.ToLower(t.Method(i).Name); key == mdb.LIST {
+		if key := kit.LowerCapital(t.Method(i).Name); key == mdb.LIST {
 			command.Hand = func(m *ice.Message, c *ice.Context, cmd string, arg ...string) { h(m, arg...) }
 		} else {
 			if key == ice.INIT {
