@@ -16,6 +16,9 @@ import (
 
 type Message struct{ *ice.Message }
 
+func Render(m *Message, t string, arg ...interface{}) string {
+	return ice.Render(m.Message, t, arg...)
+}
 func (m *Message) Spawn(arg ...interface{}) *Message {
 	return &Message{m.Message.Spawn(arg...)}
 }
