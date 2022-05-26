@@ -31,7 +31,9 @@ func (z Zone) Remove(m *Message, arg ...string) {
 	z.Data.Delete(m, mdb.HASH, m.OptionSimple(z.Short(m)))
 }
 func (z Zone) Insert(m *Message, arg ...string) {
-	z.Data.Insert(m, mdb.HASH, m.OptionSimple(z.Short(m)))
+	if m.Conf(m.PrefixKey(), kit.KeyHash(m.Option(z.Short(m)))) == "" {
+		z.Data.Insert(m, mdb.HASH, m.OptionSimple(z.Short(m)))
+	}
 	z.Data.Insert(m, mdb.ZONE, m.Option(z.Short(m)), arg[2:])
 }
 func (z Zone) Modify(m *Message, arg ...string) {

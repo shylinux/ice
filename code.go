@@ -53,6 +53,9 @@ func (c Code) Order(m *Message, src, dir string, arg ...string) {
 func (c Code) Start(m *Message, src string, arg ...string) {
 	m.Cmdy(code.INSTALL, cli.START, src, arg)
 }
+func (c Code) Stop(m *Message, src string, arg ...string) {
+	m.Cmdy(code.INSTALL, cli.STOP, src, arg)
+}
 func (c Code) List(m *Message, src string, arg ...string) {
 	m.Cmdy(code.INSTALL, src, arg)
 }
