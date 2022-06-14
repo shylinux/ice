@@ -11,7 +11,7 @@ import (
 	kit "shylinux.com/x/toolkits"
 )
 
-func ref(obj interface{}) (reflect.Type, reflect.Value) {
+func ref(obj Any) (reflect.Type, reflect.Value) {
 	t := reflect.TypeOf(obj)
 	v := reflect.ValueOf(obj)
 	if t.Kind() == reflect.Ptr {
@@ -26,7 +26,7 @@ func val(m *ice.Message, arg ...string) []reflect.Value {
 	}
 	return args
 }
-func transMethod(obj interface{}, command *ice.Command, config *ice.Config) {
+func transMethod(obj Any, command *ice.Command, config *ice.Config) {
 	t, v := ref(obj)
 	for i := 0; i < v.NumMethod(); i++ {
 		method := v.Method(i)
@@ -61,7 +61,7 @@ func transMethod(obj interface{}, command *ice.Command, config *ice.Config) {
 	}
 }
 
-func transField(obj interface{}, command *ice.Command, config *ice.Config) {
+func transField(obj Any, command *ice.Command, config *ice.Config) {
 	t, v := ref(obj)
 	for i := 0; i < v.NumField(); i++ {
 		if t.Field(i).Type.Kind() == reflect.Struct {
@@ -118,7 +118,7 @@ func transField(obj interface{}, command *ice.Command, config *ice.Config) {
 
 var list = map[string]string{}
 
-func GetTypeKey(obj interface{}) string {
+func GetTypeKey(obj Any) string {
 	switch t, v := ref(obj); v.Kind() {
 	case reflect.Struct:
 		return kit.Select(t.String(), listKey(t))
@@ -134,8 +134,8 @@ func listKey(t reflect.Type, arg ...string) string {
 	return arg[0]
 }
 
-func Cmd(key string, obj interface{}, arg ...interface{}) string { return cmd(key, obj, arg...) }
-func cmd(key string, obj interface{}, arg ...interface{}) string {
+func Cmd(key string, obj Any, arg ...Any) string { return cmd(key, obj, arg...) }
+func cmd(key string, obj Any, arg ...Any) string {
 	if obj == nil {
 		return key
 	}

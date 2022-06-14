@@ -9,7 +9,7 @@ import (
 	kit "shylinux.com/x/toolkits"
 )
 
-var prepare []interface{}
+var prepare []Any
 
 func init() {
 	Cmd("web.chat.prepare._init", func(m *Message, arg ...string) {

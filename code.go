@@ -61,7 +61,7 @@ func (s Code) Download(m *Message, arg ...string) {
 func (s Code) Source(m *Message, src string, arg ...string) {
 	m.Cmdy(code.INSTALL, nfs.SOURCE, s.Link(m, src), kit.Select(nfs.PWD, arg, 0))
 }
-func (s Code) prepare(m *Message, arg ...interface{}) []string {
+func (s Code) prepare(m *Message, arg ...Any) []string {
 	args := []string{}
 	for _, v := range arg {
 		switch v := v.(type) {
@@ -79,7 +79,7 @@ func (s Code) prepare(m *Message, arg ...interface{}) []string {
 	}
 	return args
 }
-func (s Code) Build(m *Message, arg ...interface{}) {
+func (s Code) Build(m *Message, arg ...Any) {
 	m.PushStream()
 	args := s.prepare(m, arg...)
 	m.Cmdy(code.INSTALL, cli.BUILD, kit.Select(m.Config(nfs.SOURCE), args, 0), kit.Slice(args, 1))
@@ -87,7 +87,7 @@ func (s Code) Build(m *Message, arg ...interface{}) {
 func (s Code) Order(m *Message, src, dir string, arg ...string) {
 	m.Cmdy(code.INSTALL, cli.ORDER, s.Link(m, src), dir)
 }
-func (s Code) Start(m *Message, src, bin string, arg ...interface{}) {
+func (s Code) Start(m *Message, src, bin string, arg ...Any) {
 	args := s.prepare(m, arg...)
 	m.Cmdy(code.INSTALL, cli.START, s.Link(m, src), bin, args)
 }
@@ -137,17 +137,17 @@ func (s Code) Stream(m *Message, dir string, arg ...string) {
 	m.StatusTime()
 }
 
-func CodeCmd(obj interface{}, arg ...interface{}) string {
+func CodeCmd(obj Any, arg ...Any) string {
 	return cmd(kit.Keys("web.code", kit.FileName(2)), obj, arg...)
 }
-func CodeModCmd(obj interface{}, arg ...interface{}) string {
+func CodeModCmd(obj Any, arg ...Any) string {
 	return cmd(getModCmd("web.code", 2, obj), obj, arg...)
 }
-func CodeCtxCmd(obj interface{}, arg ...interface{}) string {
+func CodeCtxCmd(obj Any, arg ...Any) string {
 	return cmd(getCtxCmd("web.code", 2, obj), obj, arg...)
 }
 
-func getModCmd(p string, n int, obj interface{}) string {
+func getModCmd(p string, n int, obj Any) string {
 	switch t, v := ref(obj); v.Kind() {
 	case reflect.Struct:
 		return kit.Keys(p, modName(t.PkgPath()), strings.ToLower(kit.Slice(kit.Split(t.String(), ice.PT), -1)[0]))
@@ -155,7 +155,7 @@ func getModCmd(p string, n int, obj interface{}) string {
 		return kit.Keys(p, modName(kit.ModName(n+1)), kit.FileName(n+1))
 	}
 }
-func getCtxCmd(p string, n int, obj interface{}) string {
+func getCtxCmd(p string, n int, obj Any) string {
 	switch t, v := ref(obj); v.Kind() {
 	case reflect.Struct:
 		return kit.Keys(p, ctxName(t.PkgPath()), strings.ToLower(kit.Slice(kit.Split(t.String(), ice.PT), -1)[0]))

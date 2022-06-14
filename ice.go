@@ -14,12 +14,14 @@ import (
 	kit "shylinux.com/x/toolkits"
 )
 
+type Any = interface{}
+type Map = map[string]interface{}
 type Message struct{ *ice.Message }
 
-func Render(m *Message, t string, arg ...interface{}) string {
+func Render(m *Message, t string, arg ...Any) string {
 	return ice.Render(m.Message, t, arg...)
 }
-func (m *Message) Spawn(arg ...interface{}) *Message {
+func (m *Message) Spawn(arg ...Any) *Message {
 	return &Message{m.Message.Spawn(arg...)}
 }
 func (m *Message) PushStream() func() *Message {
@@ -30,7 +32,7 @@ func (m *Message) PushStream() func() *Message {
 		return m
 	}
 }
-func Name(arg ...interface{}) string {
+func Name(arg ...Any) string {
 	switch cmd := arg[0].(type) {
 	case string:
 	default:
@@ -41,7 +43,7 @@ func Name(arg ...interface{}) string {
 	}
 	return ""
 }
-func trans(arg ...interface{}) []interface{} {
+func trans(arg ...Any) []Any {
 	if len(arg) > 1 {
 		switch action := arg[1].(type) {
 		case string:
@@ -67,20 +69,20 @@ func trans(arg ...interface{}) []interface{} {
 	}
 	return arg
 }
-func (m *Message) Conf(arg ...interface{}) string {
+func (m *Message) Conf(arg ...Any) string {
 	return m.Message.Conf(trans(arg...)...)
 }
-func (m *Message) Cmd(arg ...interface{}) *Message {
+func (m *Message) Cmd(arg ...Any) *Message {
 	return &Message{m.Message.Cmd(trans(arg...)...)}
 }
-func (m *Message) Cmdx(arg ...interface{}) string {
+func (m *Message) Cmdx(arg ...Any) string {
 	return m.Message.Cmdx(trans(arg...)...)
 }
-func (m *Message) Cmdy(arg ...interface{}) *Message {
+func (m *Message) Cmdy(arg ...Any) *Message {
 	return &Message{m.Message.Cmdy(trans(arg...)...)}
 }
 
-func (m *Message) HTTP(path string, hand interface{}) {
+func (m *Message) HTTP(path string, hand Any) {
 	if path == "" {
 		path = m.CommandKey()
 	}

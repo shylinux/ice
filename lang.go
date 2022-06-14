@@ -10,7 +10,7 @@ import (
 type Lang struct {
 }
 
-func (l Lang) Init(m *Message, arg ...interface{}) {
+func (l Lang) Init(m *Message, arg ...Any) {
 	m.Config(code.PLUG, kit.Dict(arg...))
 	code.LoadPlug(m.Message, m.PrefixKey())
 	m.Config(kit.Keys(code.PLUG, code.PREPARE), "")
@@ -29,7 +29,7 @@ func (l Lang) Engine(m *Message, arg ...string) {
 func (l Lang) Search(m *Message, arg ...string) {
 }
 
-func (l Lang) System(m *Message, arg ...interface{}) bool {
+func (l Lang) System(m *Message, arg ...Any) bool {
 	if !code.InstallSoftware(m.Spawn().Message, kit.Simple(arg)[0], m.Configv(INSTALL)) {
 		return false
 	}

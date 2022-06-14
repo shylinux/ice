@@ -18,34 +18,34 @@ type Data struct {
 func (d Data) Short(m *Message) string { return m.Config(mdb.SHORT) }
 func (d Data) Field(m *Message) string { return m.Config(mdb.FIELD) }
 
-func (d Data) Insert(m *Message, arg ...interface{}) {
+func (d Data) Insert(m *Message, arg ...Any) {
 	m.Cmdy(mdb.INSERT, m.PrefixKey(), "", kit.Simple(arg))
 }
-func (d Data) Delete(m *Message, arg ...interface{}) {
+func (d Data) Delete(m *Message, arg ...Any) {
 	m.Cmdy(mdb.DELETE, m.PrefixKey(), "", kit.Simple(arg))
 }
-func (d Data) Modify(m *Message, arg ...interface{}) {
+func (d Data) Modify(m *Message, arg ...Any) {
 	m.Cmdy(mdb.MODIFY, m.PrefixKey(), "", kit.Simple(arg))
 }
-func (d Data) Select(m *Message, arg ...interface{}) {
+func (d Data) Select(m *Message, arg ...Any) {
 	m.Cmdy(mdb.SELECT, m.PrefixKey(), "", kit.Simple(arg))
 }
-func (d Data) Inputs(m *Message, arg ...interface{}) {
+func (d Data) Inputs(m *Message, arg ...Any) {
 	m.Cmdy(mdb.INPUTS, m.PrefixKey(), "", kit.Simple(arg))
 }
-func (d Data) Prunes(m *Message, arg ...interface{}) {
+func (d Data) Prunes(m *Message, arg ...Any) {
 	if m.OptionFields() == "" {
 		m.OptionFields(m.Config(mdb.FIELD))
 	}
 	m.Cmdy(mdb.PRUNES, m.PrefixKey(), "", kit.Simple(arg))
 }
-func (d Data) Export(m *Message, arg ...interface{}) {
+func (d Data) Export(m *Message, arg ...Any) {
 	if m.OptionFields() == "" {
 		m.OptionFields(m.Config(mdb.FIELD))
 	}
 	m.Cmdy(mdb.EXPORT, m.PrefixKey(), "", kit.Simple(arg))
 }
-func (d Data) Import(m *Message, arg ...interface{}) {
+func (d Data) Import(m *Message, arg ...Any) {
 	m.Cmdy(mdb.IMPORT, m.PrefixKey(), "", kit.Simple(arg))
 }
 func (d Data) Next(m *Message, arg ...string) {
