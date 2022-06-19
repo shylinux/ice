@@ -7,7 +7,6 @@ import (
 	ice "shylinux.com/x/icebergs"
 	_ "shylinux.com/x/icebergs/base"
 	"shylinux.com/x/icebergs/base/cli"
-	"shylinux.com/x/icebergs/base/ctx"
 	"shylinux.com/x/icebergs/base/web"
 	_ "shylinux.com/x/icebergs/core"
 	_ "shylinux.com/x/icebergs/misc"
@@ -74,8 +73,10 @@ func GetTypeKey(obj Any) string {
 	switch t, v := ref(obj); v.Kind() {
 	case reflect.Struct:
 		return kit.Select(t.String(), listKey(t))
+	case reflect.Func:
+		return kit.LowerCapital(kit.FuncName(obj))
 	default:
-		return ""
+		panic("not implements")
 	}
 }
 func GetTypeName(arg ...Any) string {
@@ -87,10 +88,7 @@ func trans(arg ...Any) []Any {
 		case []string:
 		case string:
 		default:
-			switch _, v := ref(action); v.Kind() {
-			case reflect.Func:
-				arg[1] = kit.LowerCapital(kit.FuncName(action))
-			}
+			arg[1] = GetTypeKey(action)
 		}
 	}
 
@@ -98,12 +96,7 @@ func trans(arg ...Any) []Any {
 	case []string:
 	case string:
 	default:
-		switch t, v := ref(cmd); v.Kind() {
-		case reflect.Struct:
-			arg[0] = GetTypeKey(t)
-		default:
-			return append(kit.List(kit.FileName(cmd), ctx.ACTION, kit.LowerCapital(kit.FuncName(cmd))), arg[1:]...)
-		}
+		arg[0] = GetTypeKey(cmd)
 	}
 	return arg
 }

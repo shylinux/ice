@@ -80,8 +80,8 @@ func (s Code) Build(m *Message, arg ...Any) {
 	args := s.prepare(m, arg...)
 	m.Cmdy(code.INSTALL, cli.BUILD, kit.Select(m.Config(nfs.SOURCE), args, 0), kit.Slice(args, 1))
 }
-func (s Code) Order(m *Message, src, dir string, arg ...string) {
-	m.Cmdy(code.INSTALL, cli.ORDER, s.Link(m, src), dir)
+func (s Code) Order(m *Message, arg ...string) {
+	m.Cmdy(code.INSTALL, cli.ORDER, s.Link(m, kit.Select("", arg, 0)), kit.Select(ice.BIN, arg, 1))
 }
 func (s Code) Start(m *Message, src, bin string, arg ...Any) {
 	args := s.prepare(m, arg...)
