@@ -23,7 +23,7 @@ type Code struct {
 	download   string `name:"download" help:"下载"`
 	build      string `name:"build" help:"构建"`
 	order      string `name:"order" help:"定制"`
-	start      string `name:"start" help:"启动"`
+	start      string `name:"start port" help:"启动"`
 	stop       string `name:"stop" help:"停止"`
 	open       string `name:"open" help:"打开"`
 	serve      string `name:"serve" help:"服务"`
@@ -98,7 +98,9 @@ func (s Code) Open(m *Message, arg ...string) {
 	m.ProcessOpen(m.Option(mdb.LINK))
 }
 func (s Code) List(m *Message, src string, arg ...string) {
-	m.Cmdy(code.INSTALL, s.Link(m, src), arg)
+	if m.Cmdy(code.INSTALL, s.Link(m, src), arg); len(arg) == 0 {
+		s.PushLink(m)
+	}
 }
 func (s Code) PushLink(m *Message) *Message {
 	hostname := m.OptionUserWeb().Hostname()
