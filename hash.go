@@ -20,9 +20,6 @@ func (h Hash) Short(m *Message) string {
 	return kit.Select(mdb.HASH, h.Data.Short(m))
 }
 
-func (h Hash) Prunes(m *Message, arg ...string) {
-	h.Data.Prunes(m, mdb.HASH, arg)
-}
 func (h Hash) Inputs(m *Message, arg ...string) {
 	h.Data.Inputs(m, mdb.HASH, arg)
 }
@@ -35,6 +32,9 @@ func (h Hash) Remove(m *Message, arg ...string) {
 }
 func (h Hash) Modify(m *Message, arg ...string) {
 	h.Data.Modify(m, mdb.HASH, m.OptionSimple(h.Short(m)), arg)
+}
+func (h Hash) Prunes(m *Message, arg ...string) {
+	h.Data.Prunes(m, mdb.HASH, arg)
 }
 func (h Hash) Export(m *Message, arg ...string) {
 	h.Data.Export(m, mdb.HASH)
@@ -50,7 +50,4 @@ func (h Hash) List(m *Message, arg ...string) *Message {
 }
 func (h Hash) Prev(m *Message, arg ...string) {
 	mdb.PrevPageLimit(m.Message, kit.Select("0", arg, 0), kit.Slice(arg, 1)...)
-}
-func (h Hash) Next(m *Message, arg ...string) {
-	mdb.NextPage(m.Message, kit.Select("0", arg, 0), kit.Slice(arg, 1)...)
 }

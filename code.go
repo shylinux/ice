@@ -18,7 +18,6 @@ import (
 )
 
 type Code struct {
-	inputs     string `name:"inputs" help:"补全"`
 	install    string `name:"install" help:"安装"`
 	download   string `name:"download" help:"下载"`
 	build      string `name:"build" help:"构建"`
@@ -39,9 +38,6 @@ func (s Code) Link(m *Message, arg ...string) string {
 }
 func (s Code) Path(m *Message, url string) string {
 	return path.Join(ice.USR_INSTALL, kit.TrimExt(url))
-}
-func (s Code) PathOther(m *Message, url string) string {
-	return kit.Path(ice.USR_INSTALL, strings.Split(m.Cmdx(cli.SYSTEM, "sh", "-c", kit.Format("tar tf %s| head -n1", path.Join(ice.USR_INSTALL, path.Base(url)))), "/")[0])
 }
 
 func (s Code) Inputs(m *Message, arg ...string) {

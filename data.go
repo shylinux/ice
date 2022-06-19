@@ -6,13 +6,16 @@ import (
 )
 
 type Data struct {
-	_delete string `name:"delete" help:"删除"`
+	create  string `name:"create" help:"创建"`
 	remove  string `name:"remove" help:"删除"`
+	insert  string `name:"insert" help:"添加"`
+	delete  string `name:"delete" help:"删除"`
 	prunes  string `name:"prunes" help:"清理"`
 	export  string `name:"export" help:"导出"`
 	_import string `name:"import" help:"导入"`
-	next    string `name:"next" help:"下一页"`
-	prev    string `name:"prev" help:"上一页"`
+
+	next string `name:"next" help:"下一页"`
+	prev string `name:"prev" help:"上一页"`
 }
 
 func (d Data) Short(m *Message) string { return m.Config(mdb.SHORT) }
@@ -48,12 +51,13 @@ func (d Data) Export(m *Message, arg ...Any) {
 func (d Data) Import(m *Message, arg ...Any) {
 	m.Cmdy(mdb.IMPORT, m.PrefixKey(), "", kit.Simple(arg))
 }
+
+func (d Data) List(m *Message, arg ...string) {
+	m.Echo("hello world")
+}
 func (d Data) Next(m *Message, arg ...string) {
 	mdb.NextPage(m.Message, kit.Select("0", arg, 0), kit.Slice(arg, 1)...)
 }
 func (d Data) Prev(m *Message, arg ...string) {
 	mdb.PrevPage(m.Message, kit.Select("0", arg, 0), kit.Slice(arg, 1)...)
-}
-func (d Data) List(m *Message, arg ...string) {
-	m.Echo("hello world")
 }

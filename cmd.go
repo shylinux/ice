@@ -46,11 +46,11 @@ func transMethod(obj Any, command *ice.Command, config *ice.Config) {
 		if key := kit.LowerCapital(t.Method(i).Name); key == mdb.LIST {
 			command.Hand = func(m *ice.Message, arg ...string) { h(m, arg...) }
 		} else {
-			if key == ice.INIT {
-				key = ice.CTX_INIT
+			if key == INIT {
+				key = CTX_INIT
 			}
-			if key == ice.EXIT {
-				key = ice.CTX_EXIT
+			if key == EXIT {
+				key = CTX_EXIT
 			}
 			if action, ok := command.Action[key]; !ok {
 				command.Action[key] = &ice.Action{Hand: h}
@@ -60,7 +60,6 @@ func transMethod(obj Any, command *ice.Command, config *ice.Config) {
 		}
 	}
 }
-
 func transField(obj Any, command *ice.Command, config *ice.Config) {
 	t, v := ref(obj)
 	for i := 0; i < v.NumField(); i++ {
@@ -73,60 +72,47 @@ func transField(obj Any, command *ice.Command, config *ice.Config) {
 
 	meta := kit.Value(config.Value, mdb.META)
 	for i := 0; i < v.NumField(); i++ {
-		key, tag := t.Field(i).Name, t.Field(i).Tag
-		switch key {
-		case "display":
-			panic("cmd display error")
-			// for k, v := range ice.DisplayRequire(3, tag.Get(mdb.DATA)) {
-			// 	command.Meta[k] = v
-			// }
-			continue
-		}
-		if data := tag.Get(mdb.DATA); data != "" {
-			kit.Value(meta, key, data)
-		}
-
-		name := tag.Get(mdb.NAME)
-		if name == "" {
-			continue
-		}
-
-		if help := tag.Get(mdb.HELP); key == mdb.LIST {
-			config.Name, config.Help = name, help
-			command.Name, command.Help = name, help
-		} else if action, ok := command.Action[key]; ok {
-			action.Name, action.Help = name, help
-		}
-
-		h, ok := tag.Lookup(ice.HTTP)
-		if !ok {
-			continue
-		}
-
-		hand := func(msg *Message, arg ...string) { msg.Cmdy(msg.CommandKey(), ctx.ACTION, key, arg) }
-		if key == mdb.LIST {
-			hand = func(msg *Message, arg ...string) { msg.Cmdy(msg.CommandKey(), arg) }
-		}
-		last := command.Action[ice.CTX_INIT]
-		command.Action[ice.CTX_INIT] = &ice.Action{Hand: func(m *ice.Message, arg ...string) {
-			if last != nil && last.Hand != nil {
-				last.Hand(m, arg...)
+		key, tag, val := t.Field(i).Name, t.Field(i).Tag, ""
+		if v.Field(i).CanInterface() {
+			switch v := v.Field(i).Interface().(type) {
+			case string:
+				val = v
 			}
-			(&Message{m}).HTTP(kit.Select(m.CommandKey(), h), hand)
-		}}
+		}
+
+		if data, ok := tag.Lookup(mdb.DATA); ok { // data tag
+			kit.Value(meta, key, kit.Select(data, val))
+		}
+
+		if name, ok := tag.Lookup(mdb.NAME); ok { // name tag
+			name = kit.Select(name, val)
+			if help := tag.Get(mdb.HELP); key == mdb.LIST {
+				config.Name, config.Help = name, help
+				command.Name, command.Help = name, help
+			} else if action, ok := command.Action[key]; ok {
+				action.Name, action.Help = name, help
+			}
+		}
+
+		if http, ok := tag.Lookup(HTTP); ok { // http tag
+			hand := func(msg *Message, arg ...string) { msg.Cmdy(msg.CommandKey(), ctx.ACTION, key, arg) }
+			if key == mdb.LIST {
+				hand = func(msg *Message, arg ...string) { msg.Cmdy(msg.CommandKey(), arg) }
+			}
+
+			last := command.Action[CTX_INIT]
+			command.Action[CTX_INIT] = &ice.Action{Hand: func(m *ice.Message, arg ...string) {
+				if last != nil && last.Hand != nil {
+					last.Hand(m, arg...)
+				}
+				(&Message{m}).HTTP(kit.Select(m.CommandKey(), http), hand)
+			}}
+		}
 	}
 }
 
 var list = map[string]string{}
 
-func GetTypeKey(obj Any) string {
-	switch t, v := ref(obj); v.Kind() {
-	case reflect.Struct:
-		return kit.Select(t.String(), listKey(t))
-	default:
-		return ""
-	}
-}
 func listKey(t reflect.Type, arg ...string) string {
 	if len(arg) == 0 {
 		return list[kit.Keys(t.PkgPath(), t.String())]
@@ -134,20 +120,18 @@ func listKey(t reflect.Type, arg ...string) string {
 	list[kit.Keys(t.PkgPath(), t.String())] = arg[0]
 	return arg[0]
 }
-
-func Cmd(key string, obj Any, arg ...Any) string { return cmd(key, obj, arg...) }
 func cmd(key string, obj Any, arg ...Any) string {
 	if obj == nil {
 		return key
 	}
-	command := &ice.Command{Name: mdb.LIST, Help: "列表", Action: map[string]*ice.Action{}, Meta: kit.Dict()}
+
 	config := &ice.Config{Value: kit.Data(arg...)}
+	command := &ice.Command{Name: mdb.LIST, Help: "列表", Action: map[string]*ice.Action{}, Meta: kit.Dict()}
 
 	switch obj := obj.(type) {
 	case func(*Message, ...string):
-		command.Hand = func(m *ice.Message, arg ...string) {
-			obj(&Message{m}, arg...)
-		}
+		command.Hand = func(m *ice.Message, arg ...string) { obj(&Message{m}, arg...) }
+
 	default:
 		t, _ := ref(obj)
 		listKey(t, key)
@@ -156,30 +140,24 @@ func cmd(key string, obj Any, arg ...Any) string {
 		transMethod(obj, command, config)
 		transField(obj, command, config)
 	}
+
 	if strings.HasPrefix(command.Name, mdb.LIST) {
 		command.Name = strings.Replace(command.Name, mdb.LIST, kit.Slice(strings.Split(key, ice.PT), -1)[0], 1)
 	}
 
-	last := ice.Index
-	list := strings.Split(key, ice.PT)
+	last, list := ice.Index, strings.Split(key, ice.PT)
 	for i := 1; i < len(list); i++ {
 		has := false
-		ice.Pulse.Search(strings.Join(list[:i], ice.PT)+ice.PT, func(p *ice.Context, s *ice.Context) {
-			has, last = true, s
-		})
-		if !has {
+		if ice.Pulse.Search(strings.Join(list[:i], ice.PT)+ice.PT, func(p *ice.Context, s *ice.Context) { has, last = true, s }); !has {
 			context := &ice.Context{Name: list[i-1]}
 			last.Register(context, &web.Frame{})
 			last = context
 		}
-		if i < len(list)-1 {
-			continue
-		}
 
-		last.Merge(&ice.Context{
-			Commands: map[string]*ice.Command{list[i]: command},
-			Configs:  map[string]*ice.Config{list[i]: config},
-		})
+		if i == len(list)-1 {
+			last.Merge(&ice.Context{Configs: map[string]*ice.Config{list[i]: config}, Commands: map[string]*ice.Command{list[i]: command}})
+		}
 	}
 	return key
 }
+func Cmd(key string, obj Any, arg ...Any) string { return cmd(key, obj, arg...) }

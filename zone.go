@@ -49,12 +49,6 @@ func (z Zone) Export(m *Message, arg ...string) {
 func (z Zone) Import(m *Message, arg ...string) {
 	z.Data.Import(m, mdb.ZONE)
 }
-func (z Zone) Prev(m *Message, arg ...string) {
-	mdb.PrevPage(m.Message, kit.Select("0", arg, 0), kit.Slice(arg, 1)...)
-}
-func (z Zone) Next(m *Message, arg ...string) {
-	mdb.NextPageLimit(m.Message, kit.Select("0", arg, 0), kit.Slice(arg, 1)...)
-}
 func (z Zone) List(m *Message, arg ...string) *Message {
 	m.Fields(len(arg), kit.Join([]string{mdb.TIME, z.Short(m), mdb.COUNT}), z.Field(m))
 	if z.Data.Select(m, mdb.ZONE, arg); len(arg) == 0 {
@@ -66,4 +60,7 @@ func (z Zone) List(m *Message, arg ...string) *Message {
 		})
 	}
 	return m
+}
+func (z Zone) Next(m *Message, arg ...string) {
+	mdb.NextPageLimit(m.Message, kit.Select("0", arg, 0), kit.Slice(arg, 1)...)
 }

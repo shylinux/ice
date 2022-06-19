@@ -7,13 +7,13 @@ import (
 	kit "shylinux.com/x/toolkits"
 )
 
-type Lang struct {
-}
+type Lang struct{}
 
 func (l Lang) Init(m *Message, arg ...Any) {
 	m.Config(code.PLUG, kit.Dict(arg...))
 	code.LoadPlug(m.Message, m.PrefixKey())
 	m.Config(kit.Keys(code.PLUG, code.PREPARE), "")
+
 	m.Cmd(mdb.PLUGIN, mdb.CREATE, m.PrefixKey())
 	m.Cmd(mdb.RENDER, mdb.CREATE, m.PrefixKey())
 	m.Cmd(mdb.ENGINE, mdb.CREATE, m.PrefixKey())
