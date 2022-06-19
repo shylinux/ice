@@ -90,13 +90,13 @@ func (m *Message) HTTP(path string, hand Any) {
 		path = ice.PS + path
 	}
 	if m.Target().Commands[web.WEB_LOGIN] == nil {
-		m.Target().Commands[web.WEB_LOGIN] = &ice.Command{Hand: func(m *ice.Message, c *ice.Context, cmd string, arg ...string) {
+		m.Target().Commands[web.WEB_LOGIN] = &ice.Command{Hand: func(m *ice.Message, arg ...string) {
 		}}
 	}
-	m.Target().Commands[path] = &ice.Command{Name: path, Help: path, Hand: func(m *ice.Message, c *ice.Context, cmd string, arg ...string) {
+	m.Target().Commands[path] = &ice.Command{Name: path, Help: path, Hand: func(m *ice.Message, arg ...string) {
 		switch hand := hand.(type) {
 		case func(*Message, string, ...string):
-			hand(&Message{m}, cmd, arg...)
+			hand(&Message{m}, m.CommandKey(), arg...)
 		case func(*Message, ...string):
 			hand(&Message{m}, arg...)
 		case string:

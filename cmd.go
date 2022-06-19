@@ -44,7 +44,7 @@ func transMethod(obj Any, command *ice.Command, config *ice.Config) {
 		}
 
 		if key := kit.LowerCapital(t.Method(i).Name); key == mdb.LIST {
-			command.Hand = func(m *ice.Message, c *ice.Context, cmd string, arg ...string) { h(m, arg...) }
+			command.Hand = func(m *ice.Message, arg ...string) { h(m, arg...) }
 		} else {
 			if key == ice.INIT {
 				key = ice.CTX_INIT
@@ -76,9 +76,10 @@ func transField(obj Any, command *ice.Command, config *ice.Config) {
 		key, tag := t.Field(i).Name, t.Field(i).Tag
 		switch key {
 		case "display":
-			for k, v := range ice.DisplayRequire(3, tag.Get(mdb.DATA)) {
-				command.Meta[k] = v
-			}
+			panic("cmd display error")
+			// for k, v := range ice.DisplayRequire(3, tag.Get(mdb.DATA)) {
+			// 	command.Meta[k] = v
+			// }
 			continue
 		}
 		if data := tag.Get(mdb.DATA); data != "" {
@@ -144,7 +145,7 @@ func cmd(key string, obj Any, arg ...Any) string {
 
 	switch obj := obj.(type) {
 	case func(*Message, ...string):
-		command.Hand = func(m *ice.Message, c *ice.Context, cmd string, arg ...string) {
+		command.Hand = func(m *ice.Message, arg ...string) {
 			obj(&Message{m}, arg...)
 		}
 	default:
