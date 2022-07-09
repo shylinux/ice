@@ -52,8 +52,8 @@ func transMethod(obj Any, command *ice.Command, config *ice.Config) {
 			if key == EXIT {
 				key = CTX_EXIT
 			}
-			if action, ok := command.Action[key]; !ok {
-				command.Action[key] = &ice.Action{Hand: h}
+			if action, ok := command.Actions[key]; !ok {
+				command.Actions[key] = &ice.Action{Hand: h}
 			} else {
 				action.Hand = h
 			}
@@ -89,7 +89,7 @@ func transField(obj Any, command *ice.Command, config *ice.Config) {
 			if help := tag.Get(mdb.HELP); key == mdb.LIST {
 				config.Name, config.Help = name, help
 				command.Name, command.Help = name, help
-			} else if action, ok := command.Action[key]; ok {
+			} else if action, ok := command.Actions[key]; ok {
 				action.Name, action.Help = name, help
 			}
 		}
@@ -100,8 +100,8 @@ func transField(obj Any, command *ice.Command, config *ice.Config) {
 				hand = func(msg *Message, arg ...string) { msg.Cmdy(msg.CommandKey(), arg) }
 			}
 
-			last := command.Action[CTX_INIT]
-			command.Action[CTX_INIT] = &ice.Action{Hand: func(m *ice.Message, arg ...string) {
+			last := command.Actions[CTX_INIT]
+			command.Actions[CTX_INIT] = &ice.Action{Hand: func(m *ice.Message, arg ...string) {
 				if last != nil && last.Hand != nil {
 					last.Hand(m, arg...)
 				}
@@ -126,7 +126,7 @@ func cmd(key string, obj Any, arg ...Any) string {
 	}
 
 	config := &ice.Config{Value: kit.Data(arg...)}
-	command := &ice.Command{Name: mdb.LIST, Help: "列表", Action: map[string]*ice.Action{}, Meta: kit.Dict()}
+	command := &ice.Command{Name: mdb.LIST, Help: "列表", Actions: map[string]*ice.Action{}, Meta: kit.Dict()}
 
 	switch obj := obj.(type) {
 	case func(*Message, ...string):

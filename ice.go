@@ -15,6 +15,7 @@ import (
 
 type Any = ice.Any
 type Map = ice.Map
+type Maps = ice.Maps
 
 type Message struct{ *ice.Message }
 
