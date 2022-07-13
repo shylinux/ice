@@ -13,7 +13,7 @@ type Zone struct {
 	field string `data:"time,id,type,name,text"`
 
 	create string `name:"create zone" help:"创建"`
-	insert string `name:"insert zone type name text" help:"添加"`
+	insert string `name:"insert zone=hi type=hello name=world text=nice" help:"添加"`
 	list   string `name:"list zone id auto insert" help:"存储"`
 }
 
