@@ -6,7 +6,6 @@ import (
 
 	ice "shylinux.com/x/icebergs"
 	_ "shylinux.com/x/icebergs/base"
-	"shylinux.com/x/icebergs/base/cli"
 	"shylinux.com/x/icebergs/base/web"
 	_ "shylinux.com/x/icebergs/core"
 	_ "shylinux.com/x/icebergs/misc"
@@ -23,7 +22,7 @@ func (m *Message) Spawn(arg ...Any) *Message {
 	return &Message{m.Message.Spawn(arg...)}
 }
 func (m *Message) PushStream() func() *Message {
-	cli.PushStream(m.Message)
+	web.PushStream(m.Message)
 	return func() *Message {
 		m.StatusTimeCount()
 		m.ProcessHold()

@@ -135,7 +135,7 @@ func cmd(key string, obj Any, arg ...Any) string {
 	default:
 		t, _ := ref(obj)
 		listKey(t, key)
-		ice.AddFileCmd(ice.FileRequire(4), key)
+		ctx.AddFileCmd(ice.FileRequire(4), key)
 
 		transMethod(obj, command, config)
 		transField(obj, command, config)

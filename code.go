@@ -99,7 +99,7 @@ func (s Code) List(m *Message, src string, arg ...string) {
 	}
 }
 func (s Code) PushLink(m *Message) *Message {
-	hostname := m.OptionUserWeb().Hostname()
+	hostname := web.OptionUserWeb(m.Message).Hostname()
 	m.Tables(func(value map[string]string) { m.Push(mdb.LINK, kit.Format("http://%s:%s", hostname, value[tcp.PORT])) })
 	return m
 }
