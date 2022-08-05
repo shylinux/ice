@@ -30,9 +30,6 @@ func (l Lang) Search(m *Message, arg ...string) {
 }
 
 func (l Lang) System(m *Message, arg ...Any) bool {
-	if !code.InstallSoftware(m.Spawn().Message, kit.Simple(arg)[0], m.Configv(INSTALL)) {
-		return false
-	}
 	if cli.IsSuccess(m.Cmdy(append(kit.List(cli.SYSTEM), arg...)...).Message) {
 		m.SetAppend()
 		return true
